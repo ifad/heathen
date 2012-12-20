@@ -7,8 +7,6 @@ module Heathen
       @logger = log
     end
 
-    # execute: originally from DISCLOSR
-    #
     # Executes the given argument vector with fork/exec.
     # Returns the command standard output as a String.
     #

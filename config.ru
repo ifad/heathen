@@ -1,5 +1,7 @@
 require 'rubygems'
-require 'bundler/setup'
+require 'bundler'
+
+Bundler.require(:default, ENV['RACK_ENV'])
 
 require File.expand_path('../app', __FILE__)
 

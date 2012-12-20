@@ -2,6 +2,8 @@ module Heathen
   module Processors
     class OfficeConverter
 
+      attr_reader :app
+
       def initialize(app)
         @app = app
       end
@@ -24,7 +26,7 @@ module Heathen
         # calling method is responsible for closing/unlinking
         def to_pdf(source, *args)
 
-          executioner = Heathen::Executioner.new(@app.converter.log)
+          executioner = Heathen::Executioner.new(app.converter.log)
 
           Tempfile.new('/tmp/heathen').tap do |file|
             file.chmod 0666
@@ -33,10 +35,10 @@ module Heathen
 
             FileUtils.ln(file.path, temp_name)
 
-            if @app.development?
-              executioner.execute("ruby", "#{@app.root}/bin/stub.rb", source, temp_name)
+            if app.development?
+              executioner.execute("ruby", "#{app.root}/bin/stub.rb", source, temp_name)
             else
-              executioner.execute('python', "#{@app.root}/bin/DocumentConverter.py", source, temp_name)
+              executioner.execute('python', "#{app.root}/bin/DocumentConverter.py", source, temp_name)
             end
 
             FileUtils.rm(temp_name)

@@ -1,6 +1,14 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    capistrano (2.13.5)
+      highline
+      net-scp (>= 1.0.0)
+      net-sftp (>= 2.0.0)
+      net-ssh (>= 2.0.14)
+      net-ssh-gateway (>= 1.1.0)
+    capistrano-ext (1.2.1)
+      capistrano (>= 1.0.0)
     columnize (0.3.6)
     debugger (1.2.2)
       columnize (>= 0.3.1)
@@ -11,6 +19,14 @@ GEM
     debugger-ruby_core_source (1.1.5)
     dragonfly (0.9.12)
       rack
+    highline (1.6.15)
+    net-scp (1.0.4)
+      net-ssh (>= 1.99.1)
+    net-sftp (2.0.5)
+      net-ssh (>= 2.0.9)
+    net-ssh (2.6.2)
+    net-ssh-gateway (1.1.0)
+      net-ssh (>= 1.99.1)
     rack (1.4.1)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -30,6 +46,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  capistrano (~> 2.13.5)
+  capistrano-ext (~> 1.2.1)
   debugger
   dragonfly (~> 0.9.12)
   rack-cache (~> 1.2)
