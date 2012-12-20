@@ -38,10 +38,17 @@ module Heathen
 
     post '/convert' do
 
-      return 400 unless PROCESSORS.include?(params[:action])
+      unless PROCESSORS.include?(params[:action])
+        return 400
+      end
 
-      url_base = url('/')
-      job      = Inquisitor.new(converter).find(params[:file])
+      inquisitor = Inquisitor.new(converter, params[:action])
+      url_base  = url('/')
+      job       = inquisitor.find(params[:file])
+
+      unless job
+        return 400
+      end
 
       if url_base.end_with?('/')
         url_base.chop!

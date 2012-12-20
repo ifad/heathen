@@ -2,7 +2,23 @@ module Heathen
   module Processors
     class OfficeConverter
 
+      MIME_TYPES = [
+        'application/zip', # For DOCX files.
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+      ]
+
       attr_reader :app
+
+      class << self
+        def valid_mime_type?(mime_type)
+          return MIME_TYPES.include?(mime_type)
+        end
+      end
 
       def initialize(app)
         @app = app
@@ -12,7 +28,7 @@ module Heathen
       # by dragonfly
       def office_to_pdf(temp_object)
          [
-           to_pdf(temp_object.tempfile.path),
+           to_pdf(temp_object.path),
            {
              name: [ temp_object.basename, 'pdf' ].join('.'),
              mime_type: "application/pdf"
