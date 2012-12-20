@@ -4,6 +4,6 @@ Ifad::God.unicorn do |w|
   w.uid = 'heathen'
   w.gid = 'ruby'
   w.env = {
-    'RAILS_ENV' => 'production'
+    'RACK_ENV' => 'production'
   }
 end  
