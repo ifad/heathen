@@ -4,10 +4,12 @@ require 'digest/sha2'
 # and returns an identical dragonfly job, or a new job
 class Inquisitor
 
-  attr_reader :app
+  attr_reader :redis
+  attr_reader :converter
 
-  def initialize(app)
-    @app = app
+  def initialize(converter)
+    @redis     = Heathen::App.redis
+    @converter = converter
   end
 
   def find(file)
@@ -15,12 +17,13 @@ class Inquisitor
     job = nil
     key = content_hash(file[:tempfile])
 
-    if serialized = app.redis[key]
-      job = Dragonfly::Job.deserialize(serialized, app.converter)   
+    if serialized = redis[key]
+      job = converter.job_class.deserialize(serialized, converter)   
     else
-      job = app.converter.new_job(file[:tempfile], name: file[:filename])
-      job = job.fetch(job.store)
-      app.redis[key] = job.serialize
+      job = converter.new_job(file[:tempfile], name: file[:filename])
+      uid = job.store
+      job = job.fetch(uid)
+      redis[key] = job.serialize
     end
 
     job

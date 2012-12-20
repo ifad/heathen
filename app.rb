@@ -41,7 +41,7 @@ module Heathen
       return 400 unless PROCESSORS.include?(params[:action])
 
       host = "#{request.scheme}://#{request.host_with_port}"
-      job  = Inquisitor.new(self).find(params[:file])
+      job  = Inquisitor.new(converter).find(params[:file])
 
       Yajl::Encoder.encode({
         original:  job.url(host: host),
