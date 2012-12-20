@@ -81,7 +81,6 @@ after 'deploy', 'deploy:cleanup'
 
 require 'bundler/capistrano'
 set :bundle_flags, "--deployment --quiet --binstubs #{deploy_to}/bin"
-set :rake,         "bundle exec rake"
 
 require 'airbrake/capistrano'
 
