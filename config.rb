@@ -1,6 +1,17 @@
 module Heathen
   module Config
     def self.configure(app)
+
+      app.configure do
+        app.set :relative_url_root, (ENV['RACK_RELATIVE_URL_ROOT'] || '')
+      end
+
+      app.helpers do
+        def relative_url_root
+          settings.relative_url_root
+        end
+      end
+
       App::Logger.configure(app)
       App::Storage.configure(app)
       App::Cache.configure(app)

@@ -19,7 +19,7 @@ module Heathen
     get '/' do
       %{
         <h4>Convert the Heathens!</h4>
-        <form action="/convert" method="POST" enctype="multipart/form-data">
+        <form action="#{url('/convert')}" method="POST" enctype="multipart/form-data">
           <div>
             <label>File:</label>
             <input type="file" name="file"/>
@@ -40,12 +40,16 @@ module Heathen
 
       return 400 unless PROCESSORS.include?(params[:action])
 
-      host = "#{request.scheme}://#{request.host_with_port}"
-      job  = Inquisitor.new(converter).find(params[:file])
+      url_base = url('/')
+      job      = Inquisitor.new(converter).find(params[:file])
+
+      if url_base.end_with?('/')
+        url_base.chop!
+      end
 
       Yajl::Encoder.encode({
-        original:  job.url(host: host),
-        converted: job.process(params[:action]).url(host: host)
+        original:  job.url(host: url_base),
+        converted: job.process(params[:action]).url(host: url_base)
       })
     end
 
