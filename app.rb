@@ -44,7 +44,7 @@ module Heathen
     post '/convert' do
 
       unless Heathen::PROCESSORS.include?(params[:action])
-        json_response({
+        return json_response({
           error: "Unsupported action",
           action: params[:action]
         }, 400)
@@ -55,7 +55,7 @@ module Heathen
       job       = inquisitor.find(params[:file])
 
       unless job
-        json_response({
+        return json_response({
           error: 'Action not supported for file',
           action: params[:action]
         }, 400)
