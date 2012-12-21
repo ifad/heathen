@@ -48,7 +48,7 @@ module Heathen
 
         # returns a Tempfile instance.
         # calling method is responsible for closing/unlinking
-        def to_pdf(source, *args)
+        def to_pdf(source)
 
           executioner = Heathen::Executioner.new(app.converter.log)
 
@@ -60,7 +60,7 @@ module Heathen
           FileUtils.ln(file.path, temp_name)
 
           if app.development?
-            executioner.execute("ruby", "#{app.root}/bin/stub.rb", source, temp_name)
+            executioner.execute("ruby", "#{app.root}/bin/libreoffice-stub.rb", source, temp_name)
           else
             executioner.execute('python', "#{app.root}/bin/DocumentConverter.py", source, temp_name)
           end

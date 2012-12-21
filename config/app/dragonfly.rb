@@ -20,6 +20,7 @@ module Heathen
             end
 
             converter.processor.register(::Heathen::Processors::OfficeConverter, app)
+            converter.processor.register(::Heathen::Processors::HtmlConverter,   app)
 
             app.set :converter, converter
 

@@ -2,6 +2,7 @@ module Heathen
 
   PROCESSORS = %w{
     office_to_pdf
+    html_to_pdf
   }
 
   class NotConverted < RuntimeError

@@ -18,6 +18,8 @@ module Heathen
       case @action
         when 'office_to_pdf'
           Processors::OfficeConverter.valid_mime_type?(job.mime_type)
+        when 'html_to_pdf'
+          Processors::HtmlConverter.valid_mime_type?(job.mime_type)
       end
     end
 

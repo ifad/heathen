@@ -32,7 +32,7 @@ module Heathen
           <div>
             <label>Action:</label>
             <select name="action">
-              <option value="office_to_pdf">Office to PDF</option>
+              #{Heathen::PROCESSORS.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n")}
             </select>
           </div>
           <hr />
@@ -51,8 +51,8 @@ module Heathen
       end
 
       inquisitor = Inquisitor.new(converter, params[:action])
-      url_base  = url('/')
-      job       = inquisitor.find(params[:file])
+      url_base   = url('/')
+      job        = inquisitor.find(params[:file])
 
       unless job
         return json_response({
