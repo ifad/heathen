@@ -13,6 +13,14 @@ module Heathen
 
     Config.configure(self)
 
+    helpers do
+      def json_response(data, code = 200)
+        status  code
+        headers "Content-type" => "application/json"
+        body    Yajl::Encoder.encode(data)
+      end
+    end
+
     get '/' do
       %{
         <h4>Convert the Heathens!</h4>
@@ -36,7 +44,10 @@ module Heathen
     post '/convert' do
 
       unless Heathen::PROCESSORS.include?(params[:action])
-        return 400
+        json_response({
+          error: "Unsupported action",
+          action: params[:action]
+        }, 400)
       end
 
       inquisitor = Inquisitor.new(converter, params[:action])
@@ -44,17 +55,17 @@ module Heathen
       job       = inquisitor.find(params[:file])
 
       unless job
-        return 400
+        json_response({
+          error: 'Action not supported for file',
+          action: params[:action]
+        }, 400)
       end
 
       if url_base.end_with?('/')
         url_base.chop!
       end
 
-      status  200
-      headers "Content-type" => "application/json"
-
-      Yajl::Encoder.encode({
+      json_response({
         original:  job.url(host: url_base),
         converted: job.process(params[:action]).url(host: url_base)
       })
@@ -64,13 +75,11 @@ module Heathen
       begin
         converter.call(env)
       rescue Heathen::NotConverted => e
-        status 500
-        headers "Content-type" => "application/json"
-        body   Yajl::Encoder.encode({
+        json_response({
           error: "Unable to convert",
           action: e.action,
           name:   e.temp_object.name
-        })
+        }, 500)
       end
     end
   end
