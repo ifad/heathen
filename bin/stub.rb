@@ -8,6 +8,9 @@ class Stub
 
   def run
     sleep 5
+    if File.basename(@source, File.extname(@source)) =~ /failure$/
+      exit 1
+    end
     File.open(@target, "w") do |f|
       f.write(File.read(File.expand_path('../stub.pdf', __FILE__)))
     end

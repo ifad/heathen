@@ -1,7 +1,7 @@
 module Heathen
 
   class Executioner
-    attr_reader :logger
+    attr_reader :logger, :last_exit_status
 
     def initialize(log)
       @logger = log
@@ -56,7 +56,7 @@ module Heathen
       logger.info "  stdout: '#{out}'\n" unless out.blank?
       logger.info "  stderr: '#{err}'\n" unless err.blank?
 
-      return (status.exitstatus == 0 ? out : nil)
+      return (@last_exit_status = status.exitstatus)
     end
   end
 end

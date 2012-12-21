@@ -2,15 +2,12 @@ $: << File.expand_path(".")
 
 require 'sinatra/base'
 require 'yajl'
+require 'heathen'
 require 'config'
 require 'executioner'
 require 'inquisitor'
 
 module Heathen
-
-  PROCESSORS = %w{
-    office_to_pdf
-  }
 
   class App < Sinatra::Base
 
@@ -38,7 +35,7 @@ module Heathen
 
     post '/convert' do
 
-      unless PROCESSORS.include?(params[:action])
+      unless Heathen::PROCESSORS.include?(params[:action])
         return 400
       end
 
@@ -54,6 +51,9 @@ module Heathen
         url_base.chop!
       end
 
+      status  200
+      headers "Content-type" => "application/json"
+
       Yajl::Encoder.encode({
         original:  job.url(host: url_base),
         converted: job.process(params[:action]).url(host: url_base)
@@ -61,7 +61,17 @@ module Heathen
     end
 
     get '/*' do
-      converter.call(env)
+      begin
+        converter.call(env)
+      rescue Heathen::NotConverted => e
+        status 500
+        headers "Content-type" => "application/json"
+        body   Yajl::Encoder.encode({
+          error: "Unable to convert",
+          action: e.action,
+          name:   e.temp_object.name
+        })
+      end
     end
   end
 end
