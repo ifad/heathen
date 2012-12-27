@@ -22,7 +22,23 @@ module Heathen
       # by dragonfly
       def html_to_pdf(temp_object)
         if content = to_pdf(temp_object.data)
-          [ content, meta(temp_object) ]
+          return [ content, meta(temp_object) ]
+        else
+          raise Heathen::NotConverted.new({
+            temp_object:    temp_object,
+            action:         'html_to_pdf',
+            original_error: nil
+          })
+        end
+      end
+
+      def url_to_pdf(temp_object)
+
+        uri = URI.parse(temp_object.meta.fetch(:url))
+        abs = absolutify(temp_object.data, uri)
+
+        if content = to_pdf(abs)
+          return [ content, meta(temp_object) ]
         else
           raise Heathen::NotConverted.new({
             temp_object:    temp_object,
@@ -32,18 +48,12 @@ module Heathen
         end
       end
 
-      def url_to_pdf(temp_object)
-        uri = URI.parse(temp_object.meta.fetch(:url))
-        abs = absolutify(temp_object.data, uri)
-
-        [ to_pdf(abs), meta(temp_object) ]
-      end
-
       private
 
         def meta(temp_object)
           {
             name:      [ temp_object.basename, 'pdf' ].join('.'),
+            format:    :pdf,
             mime_type: "application/pdf"
           }
         end

@@ -64,7 +64,8 @@ module Heathen
           converter.new_job(file.fetch(:tempfile), name: file.fetch(:filename))
 
         elsif url = params[:url]
-          converter.fetch_url(url)
+          # for now, force text/html for all urls
+          converter.fetch_url(url).tap { |j| j.meta[:format] = :html }
         end
       end
 
