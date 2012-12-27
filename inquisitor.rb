@@ -5,41 +5,43 @@ module Heathen
   # and returns an identical dragonfly job, or a new job
   class Inquisitor
 
-    attr_reader :redis
-    attr_reader :converter
+    attr_reader :redis, :converter, :params
 
-    def initialize(converter, action)
+    def initialize(converter, params)
       @redis     = Heathen::App.redis
       @converter = converter
-      @action    = action
+      @params    = params
     end
 
     def can_convert?(job)
-      case @action
+      case params[:action]
         when 'office_to_pdf'
           Processors::OfficeConverter.valid_mime_type?(job.mime_type)
-        when 'html_to_pdf'
+
+        when 'html_to_pdf', 'url_to_pdf'
           Processors::HtmlConverter.valid_mime_type?(job.mime_type)
       end
     end
 
-    def find(file)
+    def job
 
       job = nil
-      key = content_hash(file[:tempfile])
+      key = content_hash
 
       if serialized = redis[key]
         job = converter.job_class.deserialize(serialized, converter)
       else
-        job = converter.new_job(file[:tempfile], name: file[:filename])
+        job = make_job
 
         unless can_convert?(job)
           return nil
         end
 
-        uid = job.store
+        job.meta.merge!(meta_data)
 
+        uid = job.store
         job = converter.fetch(uid)
+
         redis[key] = job.serialize
       end
 
@@ -48,8 +50,31 @@ module Heathen
 
     private
 
-      def content_hash(file)
-        Digest::SHA2.file(file).hexdigest
+      def content_hash
+        if file = params[:file]
+          Digest::SHA2.file(file.fetch(:tempfile)).hexdigest
+
+        elsif url = params[:url]
+          Digest::SHA2.hexdigest(url)
+        end
+      end
+
+      def make_job
+        if file = params[:file]
+          converter.new_job(file.fetch(:tempfile), name: file.fetch(:filename))
+
+        elsif url = params[:url]
+          converter.fetch_url(url)
+        end
+      end
+
+      def meta_data
+        if file = params[:file]
+          { name: file.fetch(:filename) }
+
+        elsif url = params[:url]
+          { url: url }
+        end
       end
   end
 end

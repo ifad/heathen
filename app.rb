@@ -30,6 +30,10 @@ module Heathen
             <input type="file" name="file"/>
           </div>
           <div>
+            <label>URL:</label>
+            <input type="text" name="url"/>
+          </div>
+          <div>
             <label>Action:</label>
             <select name="action">
               #{Heathen::PROCESSORS.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n")}
@@ -50,9 +54,9 @@ module Heathen
         }, 400)
       end
 
-      inquisitor = Inquisitor.new(converter, params[:action])
+      inquisitor = Inquisitor.new(converter, params)
       url_base   = url('/')
-      job        = inquisitor.find(params[:file])
+      job        = inquisitor.job
 
       unless job
         return json_response({
