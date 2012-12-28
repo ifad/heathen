@@ -65,8 +65,6 @@ module Heathen
 
           while data = string.match(/(?:href|src)=['"](.+?)['"]/, pos)
 
-            app.converter.log.info("data: #{data.inspect}")
-
             rel = URI.parse(data[1]) rescue nil
             pos = data.end(1)
 
