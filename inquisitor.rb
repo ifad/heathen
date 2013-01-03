@@ -25,14 +25,12 @@ module Heathen
 
     def job
 
-      job = nil
-      key = content_hash
+      job = make_job
+      key = content_hash(job)
 
       if serialized = redis[key]
         job = converter.job_class.deserialize(serialized, converter)
       else
-        job = make_job
-
         unless can_convert?(job)
           return nil
         end
@@ -50,13 +48,8 @@ module Heathen
 
     private
 
-      def content_hash
-        if file = params[:file]
-          Digest::SHA2.file(file.fetch(:tempfile)).hexdigest
-
-        elsif url = params[:url]
-          Digest::SHA2.hexdigest(url)
-        end
+      def content_hash(job)
+        Digest::SHA2.file(job.path).hexdigest
       end
 
       def make_job
