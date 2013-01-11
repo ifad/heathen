@@ -8,8 +8,6 @@
 # Licensed under the GNU LGPL v2.1 - http://www.gnu.org/licenses/lgpl-2.1.html
 # - or any later version.
 #
-DEFAULT_OPENOFFICE_PORT = 8100
-
 import uno
 from os.path import abspath, isfile, splitext
 from com.sun.star.beans import PropertyValue
@@ -121,13 +119,13 @@ class DocumentConversionException(Exception):
 
 class DocumentConverter:
     
-    def __init__(self, port=DEFAULT_OPENOFFICE_PORT):
+    def __init__(self, host, port):
         localContext = uno.getComponentContext()
         resolver = localContext.ServiceManager.createInstanceWithContext("com.sun.star.bridge.UnoUrlResolver", localContext)
         try:
-            context = resolver.resolve("uno:socket,host=localhost,port=%s;urp;StarOffice.ComponentContext" % port)
+            context = resolver.resolve("uno:socket,host=%s,port=%s;urp;StarOffice.ComponentContext" % (host, port))
         except NoConnectException:
-            raise DocumentConversionException, "failed to connect to OpenOffice.org on port %s" % port
+            raise DocumentConversionException, "failed to connect to OpenOffice.org on %s:%s" % (host, port)
         self.desktop = context.ServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", context)
 
     def convert(self, inputFile, outputFile):
@@ -212,16 +210,16 @@ class DocumentConverter:
 if __name__ == "__main__":
     from sys import argv, exit
     
-    if len(argv) < 3:
-        print "USAGE: python %s <input-file> <output-file>" % argv[0]
+    if len(argv) < 5:
+        print "USAGE: python %s <host> <port> <input-file> <output-file>" % argv[0]
         exit(255)
-    if not isfile(argv[1]):
-        print "no such input file: %s" % argv[1]
+    if not isfile(argv[3]):
+        print "no such input file: %s" % argv[3]
         exit(1)
 
     try:
-        converter = DocumentConverter()    
-        converter.convert(argv[1], argv[2])
+        converter = DocumentConverter(argv[1], argv[2])
+        converter.convert(argv[3], argv[4])
     except DocumentConversionException, exception:
         print "ERROR! " + str(exception)
         exit(1)
