@@ -24,6 +24,16 @@ module Heathen
 
             app.set :converter, converter
 
+            app.set :ooo_port, 8100
+
+            app.configure(:development, :staging) do
+              app.set :ooo_host, 'localhost'
+            end
+
+            app.configure(:production) do
+              app.set :ooo_host, 'digger.ifad.org'
+            end
+
             app.helpers do
               def converter
                 settings.converter

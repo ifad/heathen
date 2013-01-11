@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 class Stub
-  def initialize(source, target)
+  def initialize(host, port, source, target)
     @source = source
     @target = target
   end
