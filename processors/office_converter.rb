@@ -52,7 +52,7 @@ module Heathen
 
           executioner = Heathen::Executioner.new(app.converter.log)
 
-          file = Tempfile.new('/tmp/heathen')
+          file = Tempfile.new("#{app.storage_root}/tmp/heathen")
           file.chmod 0666
 
           temp_name = [ file.path, 'pdf' ].join('.')
