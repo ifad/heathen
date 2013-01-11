@@ -37,7 +37,7 @@ module Heathen
         stderr.close; STDERR.reopen(stderr_w)
 
         # exec [command, argv[0] ] -- For prettier ps(1) listings :-)
-        Kernel::exec [ command, "heathen: #{command}" ], *argv
+        Kernel::exec [ command, "heathen: #{command}" ], *(argv.map(&:to_s))
       }
       logger.info "[#{pid}] spawn '#{command} #{argv.join(' ')}'"
 
