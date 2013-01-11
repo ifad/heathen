@@ -1,7 +1,7 @@
 # Number of worker processes to start. The application will serve at most
 # concurrent requests as the number of worker processes
 #
-worker_processes 2
+worker_processes 6
 
 # Maximum amount of time the application can spend in servicing a request,
 # before being killed by the Unicorn master process.
