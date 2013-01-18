@@ -77,6 +77,13 @@ namespace :deploy do
   end
 end
 
+namespace :heathen do
+  desc 'Clears the cache, causing access to existing conversion urls to reprocess content'
+  task :clear_cache, roles: :app do
+    run 'rm -rf /opt/repofiles/heathen/cache/*'
+  end
+end
+
 after 'deploy', 'deploy:cleanup'
 
 require 'bundler/capistrano'
