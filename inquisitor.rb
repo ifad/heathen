@@ -21,8 +21,8 @@ module Heathen
         when 'html_to_pdf', 'url_to_pdf'
           Processors::HtmlConverter.valid_mime_type?(job.mime_type)
 
-        when 'tiff_to_txt', 'tiff_to_html'
-          Processors::TiffConverter.valid_mime_type?(job.mime_type)
+        when 'image_to_pdf'
+          job.image?
       end
     end
 
@@ -57,9 +57,10 @@ module Heathen
 
       def make_job
         if file = params[:file]
+          converter.log.info "\n\n\nfile: #{file.inspect}"
           converter.new_job(file.fetch(:tempfile), name: file.fetch(:filename))
 
-        elsif url = params[:url]
+        elsif !(url = params[:url]).empty?
           # for now, force text/html for all urls
           converter.fetch_url(url).tap { |j| j.meta[:format] = :html }
         end

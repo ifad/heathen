@@ -4,8 +4,7 @@ module Heathen
     office_to_pdf
     html_to_pdf
     url_to_pdf
-    tiff_to_txt
-    tiff_to_html
+    image_to_pdf
   }
 
   class NotConverted < RuntimeError

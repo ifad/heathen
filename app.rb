@@ -47,7 +47,9 @@ module Heathen
 
     post '/convert' do
 
-      unless Heathen::PROCESSORS.include?(params[:action])
+      action = params[:action]
+
+      unless Heathen::PROCESSORS.include?(action)
         return json_response({
           error: "Unsupported action",
           action: params[:action]
@@ -71,7 +73,7 @@ module Heathen
 
       json_response({
         original:  job.url(host: url_base),
-        converted: job.process(params[:action]).url(host: url_base)
+        converted: (job.respond_to?(action) ? job.send(action) : job.process(action)).url(host: url_base)
       })
     end
 
