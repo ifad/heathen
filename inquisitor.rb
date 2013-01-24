@@ -20,6 +20,9 @@ module Heathen
 
         when 'html_to_pdf', 'url_to_pdf'
           Processors::HtmlConverter.valid_mime_type?(job.mime_type)
+
+        when 'tiff_to_txt'
+          Processors::TiffConverter.valid_mime_type?(job.mime_type)
       end
     end
 

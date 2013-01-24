@@ -21,6 +21,7 @@ module Heathen
 
             converter.processor.register(::Heathen::Processors::OfficeConverter, app)
             converter.processor.register(::Heathen::Processors::HtmlConverter,   app)
+            converter.processor.register(::Heathen::Processors::TiffConverter,  app)
 
             app.set :converter, converter
 
