@@ -82,6 +82,13 @@ namespace :heathen do
   task :clear_cache, roles: :app do
     run 'rm -rf /opt/repofiles/heathen/cache/*'
   end
+
+  namespace :redis do
+    desc "Clean the redis database keys"
+    task :clean do
+      run "cd #{release_path}; #{rake} redis:clean"
+    end
+  end
 end
 
 after 'deploy', 'deploy:cleanup'

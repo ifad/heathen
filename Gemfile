@@ -9,6 +9,8 @@ gem 'rack-cache',         '~> 1.2'
 gem 'pdfkit',             '~> 0.5.2'
 gem 'wkhtmltopdf-binary', '~> 0.9.9.1'
 
+gem 'rake'
+
 group :staging, :production do
   gem 'unicorn'
 end
