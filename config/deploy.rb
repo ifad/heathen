@@ -86,7 +86,7 @@ namespace :heathen do
   namespace :redis do
     desc "Clean the redis database keys"
     task :clean do
-      run "cd #{release_path}; #{rake} redis:clean"
+      run "cd #{release_path}; #{rake} redis:clean RACK_ENV=#{rack_env}"
     end
   end
 end
