@@ -37,19 +37,49 @@ module Heathen
         end
       end
 
+      def tiff_to_html(temp_object)
+        if content = to_html(temp_object.path)
+          [
+            content,
+            {
+              name:      [ temp_object.basename, 'html' ].join('.'),
+              format:    :html,
+              mime_type: "text/html"
+            }
+          ]
+        else
+          raise Heathen::NotConverted.new({
+            temp_object:    temp_object,
+            action:         'tiff_to_html',
+            original_error: nil
+          })
+        end
+      end
+
       private
 
-        # returns a Tempfile instance.
-        # calling method is responsible for closing/unlinking
         def to_txt(source)
+
+          tesseract(source, "txt")
+
+        end
+
+        def to_html(source)
+
+          tesseract(source, "html", ["hocr"])
+
+        end
+
+        def tesseract(source, format, params=[])
 
           executioner = Heathen::Executioner.new(app.converter.log)
 
           temp_name = app.storage_root + "tmp" + source.split("/").last
 
-          executioner.execute('tesseract', source, temp_name, "hocr")
+          args = [source, temp_name] + params
+          executioner.execute('tesseract', *args)
 
-          file = File.open(temp_name.to_s + ".txt", "r")
+          file = File.open(temp_name.to_s + ".#{format}", "r")
           file.close
 
           if executioner.last_exit_status == 0
@@ -58,7 +88,6 @@ module Heathen
             file.unlink
             return nil
           end
-
         end
     end
   end
