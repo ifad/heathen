@@ -43,8 +43,8 @@ end
 namespace :deploy do
   desc 'Restarts the application.'
   task :restart, :roles => :app do
-    pid = "#{deploy_to}/.unicorn.pid" 
-    run "test -f #{pid} && kill -USR2 `cat #{pid}` || true" 
+    pid = "#{deploy_to}/.unicorn.pid"
+    run "test -f #{pid} && kill -USR2 `cat #{pid}` || true"
   end
 
   namespace :ifad do
@@ -52,12 +52,12 @@ namespace :deploy do
     on :after, :only => %w( deploy:setup deploy:create_symlink ),
       :except => { :no_release => true } do
       run '/home/rails/bin/setup_permissions'
-    end 
+    end
 
     desc '[internal] Symlink rbenv version'
     task :symlink_rbenv_version, :except => { :no_release => true } do
-      run "ln -s #{deploy_to}/.rbenv-version #{release_path}" 
-    end 
+      run "ln -s #{deploy_to}/.rbenv-version #{release_path}"
+    end
     after 'deploy:update_code', 'deploy:ifad:symlink_rbenv_version'
   end
 
