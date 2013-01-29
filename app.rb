@@ -15,6 +15,8 @@ module Heathen
 
     helpers do
       def json_response(data, code = 200)
+		data.merge!(params)
+
         status  code
         headers "Content-type" => "application/json"
         body    Yajl::Encoder.encode(data)
@@ -22,27 +24,7 @@ module Heathen
     end
 
     get '/' do
-      %{
-        <h4>Convert the Heathens!</h4>
-        <form action="#{url('/convert')}" method="POST" enctype="multipart/form-data">
-          <div>
-            <label>File:</label>
-            <input type="file" name="file"/>
-          </div>
-          <div>
-            <label>URL:</label>
-            <input type="text" name="url"/>
-          </div>
-          <div>
-            <label>Action:</label>
-            <select name="action">
-              #{Heathen::PROCESSORS.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n")}
-            </select>
-          </div>
-          <hr />
-          <input type="submit" value="Convert" />
-        </form>
-      }
+      erb :index
     end
 
     post '/convert' do
@@ -51,8 +33,8 @@ module Heathen
 
       unless Heathen::PROCESSORS.include?(action)
         return json_response({
-          error: "Unsupported action",
-          action: params[:action]
+             error: "Unsupported action",
+            action: params[:action]
         }, 400)
       end
 
@@ -62,8 +44,8 @@ module Heathen
 
       unless job
         return json_response({
-          error: 'Action not supported for file',
-          action: params[:action]
+             error: 'Action not supported for file',
+            action: params[:action]
         }, 400)
       end
 
@@ -82,9 +64,9 @@ module Heathen
         converter.call(env)
       rescue Heathen::NotConverted => e
         json_response({
-          error: "Unable to convert",
-          action: e.action,
-          name:   e.temp_object.name
+             error: "Unable to convert",
+            action: e.action,
+              name: e.temp_object.name
         }, 500)
       end
     end

@@ -25,8 +25,8 @@ module Heathen
           return [ content, meta(temp_object) ]
         else
           raise Heathen::NotConverted.new({
-            temp_object:    temp_object,
-            action:         'html_to_pdf',
+               temp_object: temp_object,
+                    action: 'html_to_pdf',
             original_error: nil
           })
         end
@@ -41,8 +41,8 @@ module Heathen
           return [ content, meta(temp_object) ]
         else
           raise Heathen::NotConverted.new({
-            temp_object:    temp_object,
-            action:         'url_to_pdf',
+               temp_object: temp_object,
+                    action: 'url_to_pdf',
             original_error: nil
           })
         end
@@ -52,8 +52,8 @@ module Heathen
 
         def meta(temp_object)
           {
-            name:      [ temp_object.basename, 'pdf' ].join('.'),
-            format:    :pdf,
+                 name: [ temp_object.basename, 'pdf' ].join('.'),
+               format: :pdf,
             mime_type: "application/pdf"
           }
         end

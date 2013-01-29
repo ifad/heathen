@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>QUASAR</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+  </head>
+  <body class="application">
+    <h4>Convert the Heathens!</h4>
+    <form action="<%=url('/convert')%>" method="POST" enctype="multipart/form-data">
+      <div>
+        <label>File:</label>
+        <input type="file" name="file"/>
+      </div>
+      <div>
+        <label>URL:</label>
+        <input type="text" name="url"/>
+      </div>
+      <div id="actions">
+        <label>Action:</label>
+        <select name="action">
+          <%=Heathen::PROCESSORS.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n")%>
+        </select>
+      </div>
+      <div id="languages" style="display: none">
+        <label>Language:</label>
+        <select name="language">
+          <%=Heathen::LANGUAGES.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n")%>
+        </select>
+      </div>
+      <hr />
+      <input type="submit" value="Convert" />
+    </form>
+
+  <script language="javascript">
+    $(document).ready(function(){
+      $("#actions").on("change", "select", function(e){
+		var v = $(this).val();
+        $("#languages").toggle(v=="tiff_to_txt" || v=="tiff_to_html" || v=="ocr");
+      });
+      $("#actions select").trigger("change");
+    });
+  </script>
+  </body>
+</html>

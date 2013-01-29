@@ -31,14 +31,14 @@ module Heathen
           [
             content,
             {
-              name:      [ temp_object.basename, 'pdf' ].join('.'),
+                   name: [ temp_object.basename, 'pdf' ].join('.'),
               mime_type: "application/pdf"
             }
           ]
         else
           raise Heathen::NotConverted.new({
-            temp_object:    temp_object,
-            action:         'office_to_pdf',
+               temp_object: temp_object,
+                    action: 'office_to_pdf',
             original_error: nil
           })
         end

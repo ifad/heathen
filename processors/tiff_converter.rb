@@ -18,20 +18,20 @@ module Heathen
 
       # return a [ content, meta ] pair, as expcted
       # by dragonfly
-      def tiff_to_txt(temp_object)
+      def tiff_to_txt(temp_object, name, args = { } )
         if content = to_txt(temp_object.path)
           [
             content,
             {
-              name:      [ temp_object.basename, 'txt' ].join('.'),
-              format:    :txt,
+                   name: [ temp_object.basename, 'txt' ].join('.'),
+                 format: :txt,
               mime_type: "text/plain"
             }
           ]
         else
           raise Heathen::NotConverted.new({
-            temp_object:    temp_object,
-            action:         'tiff_to_txt',
+               temp_object: temp_object,
+                    action: 'tiff_to_txt',
             original_error: nil
           })
         end
@@ -42,15 +42,15 @@ module Heathen
           [
             content,
             {
-              name:      [ temp_object.basename, 'html' ].join('.'),
-              format:    :html,
+                   name: [ temp_object.basename, 'html' ].join('.'),
+                 format: :html,
               mime_type: "text/html"
             }
           ]
         else
           raise Heathen::NotConverted.new({
-            temp_object:    temp_object,
-            action:         'tiff_to_html',
+               temp_object: temp_object,
+                    action: 'tiff_to_html',
             original_error: nil
           })
         end

@@ -52,6 +52,11 @@ module Heathen
           config.job :image_to_pdf do
             process(:convert, "-quiet -density 72", :pdf)
           end
+
+          config.job :ocr do
+            process(:convert, "-quiet -density 300 -depth 4", :tiff)
+            process(:tiff_to_html)
+          end
         end
       end
     end

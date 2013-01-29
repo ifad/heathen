@@ -5,6 +5,12 @@ module Heathen
     html_to_pdf
     url_to_pdf
     image_to_pdf
+    ocr
+  }
+
+  LANGUAGES = %w{
+    eng
+    spa
   }
 
   class NotConverted < RuntimeError

@@ -18,10 +18,12 @@ module Heathen
         when 'office_to_pdf'
           Processors::OfficeConverter.valid_mime_type?(job.mime_type)
 
-        when 'html_to_pdf', 'url_to_pdf'
           Processors::HtmlConverter.valid_mime_type?(job.mime_type)
 
         when 'image_to_pdf'
+          job.image?
+
+        when 'ocr'
           job.image?
       end
     end
