@@ -6,6 +6,7 @@ module Heathen
       module Dragonfly
         def self.configure(app)
 
+          require "#{app.root}/processors/base"
           Dir["#{app.root}/processors/**/*.rb"].each { |f| require f }
 
           ::Dragonfly[:converter].tap do |converter|
