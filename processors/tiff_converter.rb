@@ -18,7 +18,7 @@ module Heathen
 
       # return a [ content, meta ] pair, as expcted
       # by dragonfly
-      def tiff_to_txt(temp_object, name, args = { } )
+      def tiff_to_txt( temp_object, args = { } )
         if content = to_txt(temp_object.path)
           [
             content,
@@ -37,7 +37,7 @@ module Heathen
         end
       end
 
-      def tiff_to_html(temp_object)
+      def tiff_to_html( temp_object, args = { } )
         if content = to_html(temp_object.path)
           [
             content,
@@ -70,7 +70,8 @@ module Heathen
 
         end
 
-        def tesseract(source, format, params=[])
+        def tesseract(source, format, params = [ ])
+			debugger
 
           executioner = Heathen::Executioner.new(app.converter.log)
 

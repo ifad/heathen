@@ -15,7 +15,7 @@ module Heathen
 
     helpers do
       def json_response(data, code = 200)
-		data.merge!(params)
+		data.merge!(params) if data.has_key?(:error)
 
         status  code
         headers "Content-type" => "application/json"
@@ -29,12 +29,13 @@ module Heathen
 
     post '/convert' do
 
-      action = params[:action]
+      action   = params[:action]
+      language = params[:language]
 
       unless Heathen::PROCESSORS.include?(action)
         return json_response({
              error: "Unsupported action",
-            action: params[:action]
+            action: action
         }, 400)
       end
 
@@ -45,7 +46,7 @@ module Heathen
       unless job
         return json_response({
              error: 'Action not supported for file',
-            action: params[:action]
+            action: action
         }, 400)
       end
 

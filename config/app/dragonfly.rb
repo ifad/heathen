@@ -26,7 +26,7 @@ module Heathen
 
             converter.processor.register(::Heathen::Processors::OfficeConverter, app)
             converter.processor.register(::Heathen::Processors::HtmlConverter,   app)
-            converter.processor.register(::Heathen::Processors::TiffConverter,  app)
+            converter.processor.register(::Heathen::Processors::TiffConverter,   app)
 
             app.set :converter, converter
 
@@ -54,7 +54,7 @@ module Heathen
           end
 
           config.job :ocr do
-            process(:convert, "-quiet -density 300 -depth 4", :tiff)
+            process(:convert, "-quiet -monochrome -density 600 -depth 4", :tiff)
             process(:tiff_to_html)
           end
         end
