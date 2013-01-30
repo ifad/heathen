@@ -26,7 +26,7 @@ module Heathen
 
       # return a [ content, meta ] pair, as expcted
       # by dragonfly
-      def office_to_pdf(temp_object)
+      def office_to_pdf(temp_object, args = { } )
         if content = to_pdf(temp_object.path)
           [
             content,

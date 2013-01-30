@@ -20,7 +20,7 @@ module Heathen
 
       # return a [ content, meta ] pair, as expcted
       # by dragonfly
-      def html_to_pdf(temp_object)
+      def html_to_pdf(temp_object, args = { } )
         if content = to_pdf(temp_object.data)
           return [ content, meta(temp_object) ]
         else
@@ -32,7 +32,7 @@ module Heathen
         end
       end
 
-      def url_to_pdf(temp_object)
+      def url_to_pdf(temp_object, args = { } )
 
         uri = URI.parse(temp_object.meta.fetch(:url))
         abs = absolutify(temp_object.data, uri)

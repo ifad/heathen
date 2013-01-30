@@ -21,6 +21,23 @@ module Heathen
         headers "Content-type" => "application/json"
         body    Yajl::Encoder.encode(data)
       end
+
+	  def build_job job, action
+		args = extract_args(action)
+
+        (job.respond_to?(action) ? job.send(action, args) : job.process(action, args))
+	  end
+
+	  def extract_args action
+		args = {}
+
+		case action
+		when "ocr", "tiff_to_txt", "tiff_to_html"
+		  args[:language] = params[:language] if params[:language]
+		end
+
+		args
+	  end
     end
 
     get '/' do
@@ -30,7 +47,6 @@ module Heathen
     post '/convert' do
 
       action   = params[:action]
-      language = params[:language]
 
       unless Heathen::PROCESSORS.include?(action)
         return json_response({
@@ -56,7 +72,7 @@ module Heathen
 
       json_response({
         original:  job.url(host: url_base),
-        converted: (job.respond_to?(action) ? job.send(action) : job.process(action)).url(host: url_base)
+        converted: build_job(job, action).url(host: url_base)
       })
     end
 

@@ -53,9 +53,9 @@ module Heathen
             process(:convert, "-quiet -density 72", :pdf)
           end
 
-          config.job :ocr do
+          config.job :ocr do |args|
             process(:convert, "-quiet -monochrome -density 600 -depth 4", :tiff)
-            process(:tiff_to_html)
+            process(:tiff_to_html, args)
           end
         end
       end
