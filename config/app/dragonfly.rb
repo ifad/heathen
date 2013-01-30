@@ -24,6 +24,7 @@ module Heathen
               c.root_path = "#{app.storage_root}/file"
             end
 
+            converter.processor.register(::Heathen::Processors::Base, app)
             converter.processor.register(::Heathen::Processors::OfficeConverter, app)
             converter.processor.register(::Heathen::Processors::HtmlConverter,   app)
             converter.processor.register(::Heathen::Processors::TiffConverter,   app)
