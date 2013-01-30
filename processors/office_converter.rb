@@ -16,7 +16,7 @@ module Heathen
       # by dragonfly
       def office_to_pdf(temp_object, args = { } )
         if content = to_pdf(temp_object.path)
-          [ content, mime(temp_object, :pdf, 'application/pdf') ]
+          [ content, meta(temp_object, :pdf, 'application/pdf') ]
         else
           raise Heathen::NotConverted.new({
                temp_object: temp_object,
