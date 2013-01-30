@@ -1,28 +1,14 @@
 module Heathen
   module Processors
-    class HtmlConverter
+    class HtmlConverter < Base
 
-      MIME_TYPES = %{
-        text/html
-      }
-
-      attr_reader :app
-
-      class << self
-        def valid_mime_type?(mime_type)
-          return MIME_TYPES.include?(mime_type)
-        end
-      end
-
-      def initialize(app)
-        @app = app
-      end
+      MIME_TYPES = [ 'text/html' ]
 
       # return a [ content, meta ] pair, as expcted
       # by dragonfly
       def html_to_pdf(temp_object, args = { } )
         if content = to_pdf(temp_object.data)
-          return [ content, meta(temp_object) ]
+          [ content, meta(temp_object, :pdf, 'application/pdf') ]
         else
           raise Heathen::NotConverted.new({
                temp_object: temp_object,
@@ -38,7 +24,7 @@ module Heathen
         abs = absolutify(temp_object.data, uri)
 
         if content = to_pdf(abs)
-          return [ content, meta(temp_object) ]
+          [ content, meta(temp_object, :pdf, 'application/pdf') ]
         else
           raise Heathen::NotConverted.new({
                temp_object: temp_object,
@@ -49,14 +35,6 @@ module Heathen
       end
 
       private
-
-        def meta(temp_object)
-          {
-                 name: [ temp_object.basename, 'pdf' ].join('.'),
-               format: :pdf,
-            mime_type: "application/pdf"
-          }
-        end
 
         def absolutify(source, uri)
 

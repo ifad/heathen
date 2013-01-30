@@ -1,33 +1,14 @@
 module Heathen
   module Processors
-    class TiffConverter
+    class TiffConverter < Base
 
       MIME_TYPES = [ 'image/tiff' ]
-
-      attr_reader :app
-
-      class << self
-        def valid_mime_type?(mime_type)
-          return MIME_TYPES.include?(mime_type)
-        end
-      end
-
-      def initialize(app)
-        @app = app
-      end
 
       # return a [ content, meta ] pair, as expcted
       # by dragonfly
       def tiff_to_txt( temp_object, args = { } )
         if content = to_txt(temp_object.path, args)
-          [
-            content,
-            {
-                   name: [ temp_object.basename, 'txt' ].join('.'),
-                 format: :txt,
-              mime_type: "text/plain"
-            }
-          ]
+          [ content, meta(temp_object, :txt, "text/plain") ]
         else
           raise Heathen::NotConverted.new({
                temp_object: temp_object,
@@ -39,14 +20,7 @@ module Heathen
 
       def tiff_to_html( temp_object, args = { } )
         if content = to_html(temp_object.path, args)
-          [
-            content,
-            {
-                   name: [ temp_object.basename, 'html' ].join('.'),
-                 format: :html,
-              mime_type: "text/html"
-            }
-          ]
+          [ content, meta(temp_object, :html, "text/html") ]
         else
           raise Heathen::NotConverted.new({
                temp_object: temp_object,
@@ -60,8 +34,8 @@ module Heathen
 
         def to_txt(source, args = { } )
 
-		  params = []
-		  params = ["-l #{args[:language]}"] if args[:language]
+		  params = args[:language] ? ["-l #{args[:language]}"] : []
+
           tesseract(source, "txt", params)
 
         end
