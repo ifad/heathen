@@ -1,6 +1,6 @@
 module Heathen
   module Processors
-    class OfficeConverter < Base
+    class OfficeConverter < ::Heathen::Processors::Base
 
       MIME_TYPES = [
         'application/zip', # For DOCX files.

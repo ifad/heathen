@@ -96,5 +96,5 @@ after 'deploy', 'deploy:cleanup'
 require 'bundler/capistrano'
 set :bundle_flags, "--deployment --quiet --binstubs #{deploy_to}/bin"
 
-require 'airbrake/capistrano'
+#require 'airbrake/capistrano'
 

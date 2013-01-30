@@ -1,6 +1,6 @@
 module Heathen
   module Processors
-    class HtmlConverter < Base
+    class HtmlConverter < ::Heathen::Processors::Base
 
       MIME_TYPES = [ 'text/html' ]
 

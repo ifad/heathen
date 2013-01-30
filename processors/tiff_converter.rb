@@ -1,6 +1,6 @@
 module Heathen
   module Processors
-    class TiffConverter < Base
+    class TiffConverter < ::Heathen::Processors::Base
 
       MIME_TYPES = [ 'image/tiff' ]
 
