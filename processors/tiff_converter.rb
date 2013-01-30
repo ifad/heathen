@@ -57,15 +57,19 @@ module Heathen
           temp_name = app.storage_root + "tmp" + source.split("/").last
 
           args = [source, temp_name] + params
-          executioner.execute('tesseract', *args)
+          begin
+            executioner.execute('tesseract', *args)
 
-          file = File.open(temp_name.to_s + ".#{format}", "r")
-          file.close
+            file = File.open(temp_name.to_s + ".#{format}", "r")
+            file.close
 
-          if executioner.last_exit_status == 0
-            return file
-          else
-            file.unlink
+            if executioner.last_exit_status == 0
+              return file
+            else
+              file.unlink
+              return nil
+            end
+          rescue
             return nil
           end
         end

@@ -55,7 +55,7 @@ module Heathen
           end
 
           config.job :ocr do |args|
-            process(:convert, "-quiet -monochrome -density 600 -depth 4", :tiff)
+            #process(:convert, "-quiet -density 300 -depth 4", :tiff)
             process(:tiff_to_html, args)
           end
         end
