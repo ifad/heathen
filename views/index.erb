@@ -7,7 +7,7 @@
   <body class="application">
     <h4>Convert the Heathens!</h4>
     <form action="<%=url('/convert')%>" method="POST" enctype="multipart/form-data">
-      <div>
+      <div id="file">
         <label>File:</label>
         <input type="file" name="file"/>
       </div>
@@ -37,7 +37,8 @@
 		var v = $(this).val();
 
         $("#url").toggle(v=="url_to_pdf");
-        $("#languages").toggle(v=="tiff_to_txt" || v=="tiff_to_html" || v=="ocr");
+        $("#file").toggle(v!="url_to_pdf");
+        $("#languages").toggle(v=="ocr");
       });
     });
   </script>

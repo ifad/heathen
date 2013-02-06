@@ -7,12 +7,9 @@ module Heathen
       def encode(temp_object, format, args='')
         details = identify(temp_object)
 
-        if details[:format] == :tiff
-          #executioner = Heathen::Executioner.new(app.converter.log)
-          #executioner.execute("exiv2", '-M', "del Exif.Image.XPTitle", '-M', "del Exif.Image.XPComment", temp_object.path)
+        if details[:format] != :tiff
+          process(:convert, "-quiet -density 72 -depth 4", :tiff)
         end
-
-        temp_object
       end
 
     end

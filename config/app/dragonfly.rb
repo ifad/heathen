@@ -61,7 +61,7 @@ module Heathen
 
           config.job :ocr do |args|
             #process(:convert, "-quiet -density 300 -depth 4", :tiff)
-            #encode(:image)
+            encode(:tiff)
             process(:tiff_to_html, args)
           end
         end
