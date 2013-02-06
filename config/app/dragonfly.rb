@@ -9,6 +9,9 @@ module Heathen
           require "#{app.root}/processors/base"
           Dir["#{app.root}/processors/**/*.rb"].each { |f| require f }
 
+          require "#{app.root}/encoders/base"
+          Dir["#{app.root}/encoders/**/*.rb"].each { |f| require f }
+
           ::Dragonfly[:converter].tap do |converter|
 
             converter.configure_with(:imagemagick)
@@ -28,6 +31,8 @@ module Heathen
             converter.processor.register(::Heathen::Processors::OfficeConverter, app)
             converter.processor.register(::Heathen::Processors::HtmlConverter,   app)
             converter.processor.register(::Heathen::Processors::TiffConverter,   app)
+
+                #converter.encoder.register(  ::Heathen::Encoders::ImageEncoder,      app)
 
             app.set :converter, converter
 
@@ -56,6 +61,7 @@ module Heathen
 
           config.job :ocr do |args|
             #process(:convert, "-quiet -density 300 -depth 4", :tiff)
+            #encode(:image)
             process(:tiff_to_html, args)
           end
         end

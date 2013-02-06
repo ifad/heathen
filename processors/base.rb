@@ -16,15 +16,6 @@ module Heathen
         @app = app
       end
 
-      protected
-
-        def meta(temp_object, format, mime, args = { } )
-          args.merge({
-                 name: [ temp_object.basename, 'pdf' ].join('.'),
-               format: format,
-            mime_type: mime
-          })
-        end
     end
   end
 end
