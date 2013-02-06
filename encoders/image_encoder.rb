@@ -8,8 +8,8 @@ module Heathen
         details = identify(temp_object)
 
         if details[:format] == :tiff
-          executioner = Heathen::Executioner.new(app.converter.log)
-          executioner.execute("exiv2", '-M', "del Exif.Image.XPTitle", '-M', "del Exif.Image.XPComment", temp_object.path)
+          #executioner = Heathen::Executioner.new(app.converter.log)
+          #executioner.execute("exiv2", '-M', "del Exif.Image.XPTitle", '-M', "del Exif.Image.XPComment", temp_object.path)
         end
 
         temp_object
