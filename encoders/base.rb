@@ -33,14 +33,6 @@ module Heathen
             :depth => depth.to_i
           }
         end
-
-        def meta(temp_object, format, mime, args = { } )
-          args.merge({
-                 name: [ temp_object.basename, 'pdf' ].join('.'),
-               format: format,
-            mime_type: mime
-          })
-        end
     end
   end
 end
