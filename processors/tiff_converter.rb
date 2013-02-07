@@ -1,3 +1,5 @@
+require 'nokogiri'
+
 module Heathen
   module Processors
     class TiffConverter < Base
@@ -46,11 +48,11 @@ module Heathen
 		  params << "-l #{args[:language]}" if args[:language]
 		  params << "hocr"
 
-          tesseract(source, "html", params)
+          file = tesseract(source, "html", params, true)
 
         end
 
-        def tesseract(source, format, params = [ ])
+        def tesseract(source, format, params = [ ], include_source=false)
 
           executioner = Heathen::Executioner.new(app.converter.log)
 
@@ -60,7 +62,11 @@ module Heathen
           begin
             executioner.execute('tesseract', *args)
 
-            file = File.open(temp_name.to_s + ".#{format}", "r")
+            result_file = temp_name.to_s + ".#{format}"
+
+            attach(result_file, source) if include_source
+
+            file = File.open(result_file, "r")
             file.close
 
             if executioner.last_exit_status == 0
@@ -72,6 +78,28 @@ module Heathen
           rescue
             return nil
           end
+
+        end
+
+        def attach(file, source)
+          doc = Nokogiri::HTML(IO.read(file))
+
+          css = Nokogiri::XML::Node.new "style", doc
+          css["type"] = "text/css"
+          css.content = %{
+            .img {background-image: url(data:image/tiff;base64,#{Base64.strict_encode64 IO.read(source)});}
+          }
+
+          doc.at_css('head').add_child css
+
+          img = Nokogiri::XML::Node.new "div", doc
+          img["class"] = "img"
+
+          doc.at_css('body').add_child img
+
+          f = File.open(file, "w")
+          f.puts doc.to_html
+          f.close
         end
     end
   end

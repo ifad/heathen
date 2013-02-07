@@ -8,8 +8,8 @@ gem 'yajl-ruby',          '~> 1.1.0'
 gem 'rack-cache',         '~> 1.2'
 gem 'pdfkit',             '~> 0.5.2'
 gem 'wkhtmltopdf-binary', '~> 0.9.9.1'
-
-gem 'rake'
+gem 'rake',               '~> 10.0.3'
+gem 'nokogiri',           '~> 1.5.6'
 
 group :staging, :production do
   gem 'unicorn'
