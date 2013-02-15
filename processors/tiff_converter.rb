@@ -21,7 +21,7 @@ module Heathen
       # by dragonfly
       def tiff_to_pdf( temp_object)
         if content = to_pdf(temp_object, temp_object.meta[:hocr])
-          [ temp_object, meta(temp_object, :pdf, "application/pdf") ]
+          [ content, meta(temp_object, :pdf, "application/pdf") ]
         else
           raise Heathen::NotConverted.new({
                temp_object: temp_object,
@@ -34,12 +34,12 @@ module Heathen
       private
         def to_pdf(source, meta )
           begin
-            result_file = source.path.to_s.gsub(/tif$/, "pdf")
+            result_file = File.basename(source.path).gsub(/tif$/, "pdf")
             executioner = Heathen::Executioner.new(app.converter.log)
 
-            executioner.execute('pdfbeads', source.path, source.meta[:hocr], "-o", result_file )
+            executioner.execute('pdfbeads', "--bg-compression", 'JPG', "-o", result_file, File.basename(source.path), dir: File.dirname(source.path))
 
-            file = File.open(result_file, "r")
+            file = File.open(File.dirname(source.path) + "/" + result_file, "r")
             file.close
 
             if executioner.last_exit_status == 0
@@ -70,7 +70,7 @@ module Heathen
 
           executioner = Heathen::Executioner.new(app.converter.log)
 
-          args = [source, source.gsub(/\.tif$/, "")] + params
+          args = [source, source.gsub(/\.tif$/, "")] + params + [app.root + "/config/tesseract_hocr_config.txt"]
           begin
             executioner.execute('tesseract', *args)
 

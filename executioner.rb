@@ -32,9 +32,18 @@ module Heathen
 
       started = Time.now.to_f
       command = argv.shift
+
+      options = argv.pop if argv.last.class == Hash
+
       pid = fork {
         stdout.close; STDOUT.reopen(stdout_w)
         stderr.close; STDERR.reopen(stderr_w)
+
+        if options && options[:dir]
+          logger.info "chdir '#{options[:dir]}'"
+          Dir.chdir(options[:dir])
+          logger.info argv.map(&:to_s)
+        end
 
         # exec [command, argv[0] ] -- For prettier ps(1) listings :-)
         Kernel::exec [ command, "heathen: #{command}" ], *(argv.map(&:to_s))
