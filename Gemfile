@@ -7,9 +7,11 @@ gem 'dragonfly',          '~> 0.9.12'
 gem 'yajl-ruby',          '~> 1.1.0'
 gem 'rack-cache',         '~> 1.2'
 gem 'pdfkit',             '~> 0.5.2'
+gem 'pdfbeads',           '~> 1.0.9'
 gem 'wkhtmltopdf-binary', '~> 0.9.9.1'
 gem 'rake',               '~> 10.0.3'
-gem 'nokogiri',           '~> 1.5.6'
+gem 'hpricot',            '~> 0.8.6'
+gem 'rmagick',            '~> 2.13.2'
 
 group :staging, :production do
   gem 'unicorn'

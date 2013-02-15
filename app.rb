@@ -32,7 +32,7 @@ module Heathen
 		args = {}
 
 		case action
-		when "ocr", "tiff_to_txt", "tiff_to_html"
+		when "ocr"
 		  args[:language] = params[:language] if params[:language]
 		end
 
