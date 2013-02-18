@@ -42,7 +42,6 @@ module Heathen
         if options && options[:dir]
           logger.info "chdir '#{options[:dir]}'"
           Dir.chdir(options[:dir])
-          logger.info argv.map(&:to_s)
         end
 
         # exec [command, argv[0] ] -- For prettier ps(1) listings :-)

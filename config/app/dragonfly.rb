@@ -61,6 +61,7 @@ module Heathen
 
           config.job :ocr do |args|
             encode(:tiff)
+            process(:tiff_split)
             process(:tiff_to_html, args)
             process(:tiff_to_pdf)
           end
