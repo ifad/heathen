@@ -1,3 +1,5 @@
+require 'pathname'
+
 module Heathen
   module Config
     module App
