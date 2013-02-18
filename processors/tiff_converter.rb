@@ -70,7 +70,7 @@ module Heathen
 
           executioner = Heathen::Executioner.new(app.converter.log)
 
-          args = [source, source.gsub(/\.tif$/, "")] + params + [app.root + "/config/tesseract_hocr_config.txt"]
+          args = [source, source.gsub(/\.tif$/, "")] + params + [app.root + "/config/tesseract_hocr.conf"]
           begin
             executioner.execute('tesseract', *args)
 
