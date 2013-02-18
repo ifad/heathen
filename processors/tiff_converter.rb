@@ -77,7 +77,6 @@ module Heathen
 
             file = File.open(result_file, "r")
             file.close
-            debugger
 
             if executioner.last_exit_status == 0
               return file
