@@ -66,5 +66,20 @@ module Heathen
 
       return (@last_exit_status = status.exitstatus)
     end
+
+    def quartering(heretics)
+      @heretics = heretics
+
+      (0..3).collect do |i|
+        guilty = @heretics.shift
+        Thread.fork { slaughter guilty }
+      end.map(&:join)
+    end
+
+    protected
+      def slaughter guilty
+        execute(*guilty)
+        slaughter(@heretics.shift) unless @heretics.size.zero?
+      end
   end
 end

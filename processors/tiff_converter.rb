@@ -17,17 +17,11 @@ module Heathen
       end
 
       def tiff_to_html( temp_object, args = { } )
-        hocrs = temp_object.meta[:pages].collect do |page|
-          if content = to_html(page, args)
-            page.gsub(/tif$/, "html")
-          else
-            raise Heathen::NotConverted.new({
-                 temp_object: temp_object,
-                      action: 'tiff_to_html',
-              original_error: nil
-            })
-          end
-        end
+        pages = temp_object.meta[:pages].collect{ |page| to_html(page, args) }
+		hocrs = temp_object.meta[:pages].collect{ |page| page.gsub(/tif$/, "html") }
+
+        executioner = Heathen::Executioner.new(app.converter.log)
+        executioner.quartering(pages)
 
         [ temp_object, meta(temp_object, :tiff, "image/tiff", pages: temp_object.meta[:pages], hocrs: hocrs) ]
       end
@@ -53,7 +47,7 @@ module Heathen
             base_tmp = "#{app.storage_root}/tmp/#{File.basename(source).gsub(/\.tif$/i, "_")}"
 
             executioner = Heathen::Executioner.new(app.converter.log)
-            executioner.execute('convert', '-quiet', '-scene', '0', source, base_tmp + "%d.tif")
+            executioner.execute('convert', '-quiet', '-scene', '0', source, base_tmp + "%05d.tif")
 
             if executioner.last_exit_status == 0
               return Dir[base_tmp + "*.tif"]
@@ -63,6 +57,16 @@ module Heathen
           rescue
             return nil
           end
+        end
+
+        def to_html( source, args = { } )
+
+		  params = []
+		  params << "-l #{args[:language]}" if args[:language]
+		  params << "hocr"
+
+          ["tesseract", source, source.gsub(/\.tif$/, "")] + params + [app.root + "/config/tesseract_hocr.conf"]
+
         end
 
         def to_pdf( source )
@@ -87,36 +91,6 @@ module Heathen
           rescue
             return nil
           end
-        end
-
-        def to_html( source, args = { } )
-
-		  params = []
-		  params << "-l #{args[:language]}" if args[:language]
-		  params << "hocr"
-
-          tesseract(source, "html", params, true)
-
-        end
-
-
-        def tesseract(source, format, params = [ ], include_source=false)
-
-          executioner = Heathen::Executioner.new(app.converter.log)
-
-          args = [source, source.gsub(/\.tif$/, "")] + params + [app.root + "/config/tesseract_hocr.conf"]
-          begin
-            executioner.execute('tesseract', *args)
-
-            if executioner.last_exit_status == 0
-              return true
-            else
-              return nil
-            end
-          rescue
-            return nil
-          end
-
         end
     end
   end
