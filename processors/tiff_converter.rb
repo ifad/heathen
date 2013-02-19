@@ -16,9 +16,9 @@ module Heathen
         end
       end
 
-      def tiff_to_html( temp_object, args = { } )
-        pages = temp_object.meta[:pages].collect{ |page| to_html(page, args) }
-		hocrs = temp_object.meta[:pages].collect{ |page| page.gsub(/tif$/, "html") }
+      def tiff_to_html(temp_object, args = { })
+        pages = temp_object.meta[:pages].collect { |page| to_html(page, args) }
+        hocrs = temp_object.meta[:pages].collect { |page| page.gsub(/tif$/, "html") }
 
         executioner = Heathen::Executioner.new(app.converter.log)
         executioner.quartering(pages)
@@ -29,7 +29,7 @@ module Heathen
       #
       # return a [ content, meta ] pair, as expcted
       # by dragonfly
-      def tiff_to_pdf( temp_object )
+      def tiff_to_pdf(temp_object)
         if content = to_pdf(temp_object)
           [ content, meta(temp_object, :pdf, "application/pdf") ]
         else
@@ -59,18 +59,18 @@ module Heathen
           end
         end
 
-        def to_html( source, args = { } )
+        def to_html(source, args = { })
 
-		  params = []
-		  params << "-l #{args[:language]}" if args[:language]
-		  params << "hocr"
+      params = []
+      params << "-l #{args[:language]}" if args[:language]
+      params << "hocr"
 
-          ["tesseract", source, source.gsub(/\.tif$/, "")] + params + [app.root + "/config/tesseract_hocr.conf"]
+          [ "tesseract", source, source.gsub(/\.tif$/, "")] + params + [app.root + "/config/tesseract_hocr.conf" ]
 
         end
 
-        def to_pdf( source )
-          pages       = source.meta[:pages].map{|page| File.basename(page)}
+        def to_pdf(source)
+          pages       = source.meta[:pages].map { |page| File.basename(page) }
           dir         = File.dirname(source.meta[:pages].first)
           result_file = source.path.gsub(/tif$/, "pdf")
 

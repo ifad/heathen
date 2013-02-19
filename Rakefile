@@ -12,7 +12,7 @@ namespace :heathen do
     desc "Clean the redis database keys"
     task :clean do
       redis = Heathen::App.redis
-      redis.keys.each{ |k| redis.del(k) }
+      redis.keys.each { |k| redis.del(k) }
     end
   end
 

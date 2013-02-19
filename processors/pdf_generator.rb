@@ -6,7 +6,7 @@ module Heathen
 
       # return a [ content, meta ] pair, as expcted
       # by dragonfly
-      def html_to_pdf(temp_object, args = { } )
+      def html_to_pdf(temp_object, args = { })
         if content = to_pdf(temp_object.data)
           [ content, meta(temp_object, :pdf, 'application/pdf') ]
         else
@@ -18,7 +18,7 @@ module Heathen
         end
       end
 
-      def url_to_pdf(temp_object, args = { } )
+      def url_to_pdf(temp_object, args = { })
 
         uri = URI.parse(temp_object.meta.fetch(:url))
         abs = absolutify(temp_object.data, uri)

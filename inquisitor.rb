@@ -70,8 +70,8 @@ module Heathen
       end
 
       def meta_data
-		md            = {}
-		md[:language] = params[:language]              if params[:language]
+        md            = { }
+        md[:language] = params[:language]              if params[:language]
         md[:name]     = params[:file].fetch(:filename) if params[:file]
         md[:url]      = params[:url]                   if params[:url]
 

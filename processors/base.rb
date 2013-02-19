@@ -2,7 +2,7 @@ module Heathen
   module Processors
     class Base
 
-      MIME_TYPES = %{}
+      MIME_TYPES = %{ }
 
       attr_reader :app
 
@@ -16,9 +16,9 @@ module Heathen
         @app = app
       end
 
-	  protected
+      protected
 
-        def meta(temp_object, format, mime, args = { } )
+        def meta(temp_object, format, mime, args = { })
           args.merge({
                  name: [ temp_object.basename, 'pdf' ].join('.'),
                format: format,

@@ -15,29 +15,27 @@ module Heathen
 
     helpers do
       def json_response(data, code = 200)
-		data.merge!(params) if data.has_key?(:error)
-
+        data.merge!(params) if data.has_key?(:error)
         status  code
         headers "Content-type" => "application/json"
         body    Yajl::Encoder.encode(data)
       end
 
-	  def build_job job, action
-		args = extract_args(action)
-
+      def build_job job, action
+        args = extract_args(action)
         (job.respond_to?(action) ? job.send(action, args) : job.process(action, args))
-	  end
+      end
 
-	  def extract_args action
-		args = {}
+      def extract_args action
+        args = { }
 
-		case action
-		when "ocr"
-		  args[:language] = params[:language] if params[:language]
-		end
+        case action
+          when "ocr"
+            args[:language] = params[:language] if params[:language]
+        end
 
-		args
-	  end
+        args
+      end
     end
 
     get '/' do
