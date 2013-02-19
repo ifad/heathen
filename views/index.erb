@@ -6,7 +6,7 @@
   </head>
   <body class="application">
     <h4>Convert the Heathens!</h4>
-    <form action="<%=url('/convert')%>" method="POST" enctype="multipart/form-data">
+    <form action="<%= url('/convert') %>" method="POST" enctype="multipart/form-data">
       <div id="file">
         <label>File:</label>
         <input type="file" name="file"/>
@@ -18,13 +18,13 @@
       <div id="actions">
         <label>Action:</label>
         <select name="action">
-          <%=Heathen::PROCESSORS.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n")%>
+          <%= Heathen::PROCESSORS.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n") %>
         </select>
       </div>
       <div id="languages" style="display: none">
         <label>Language:</label>
         <select name="language">
-          <%=Heathen::LANGUAGES.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n")%>
+          <%= Heathen::LANGUAGES.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n") %>
         </select>
       </div>
       <hr />
