@@ -1,5 +1,5 @@
 module Heathen
-  module Processors
+  module Encoders
     class OfficeConverter < Base
 
       MIME_TYPES = [
@@ -12,9 +12,20 @@ module Heathen
         'application/vnd.openxmlformats-officedocument.presentationml.presentation'
       ]
 
+      class << self
+        def encodes?(job)
+          valid_mime_type?(job.mime_type)
+        end
+      end
+
       # return a [ content, meta ] pair, as expcted
       # by dragonfly
-      def office_to_pdf(temp_object, args = { } )
+      def encode(temp_object, format, args = { })
+
+        unless format == :pdf && self.class.valid_mime_type?(temp_object.meta[:mime_type])
+          throw :unable_to_handle
+        end
+
         if content = to_pdf(temp_object.path)
           [ content, meta(temp_object, :pdf, 'application/pdf') ]
         else

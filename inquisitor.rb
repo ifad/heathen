@@ -14,19 +14,8 @@ module Heathen
     end
 
     def can_convert?(job)
-      case params[:action]
-        when 'office_to_pdf'
-          Processors::OfficeConverter.valid_mime_type?(job.mime_type)
-
-        when 'html_to_pdf', 'url_to_pdf'
-          Processors::HtmlConverter.valid_mime_type?(job.mime_type)
-
-        when 'image_to_pdf'
-          job.image?
-
-        when 'ocr'
-          job.image?
-      end
+      debugger
+      job.image? || Encoders.can_encode?(job)
     end
 
     def job
@@ -36,12 +25,13 @@ module Heathen
 
       if serialized = redis[key]
         job = converter.job_class.deserialize(serialized, converter)
+
       else
+        job.meta.merge!(meta_data.merge(:mime_type => job.mime_type))
+
         unless can_convert?(job)
           return nil
         end
-
-        job.meta.merge!(meta_data)
 
         uid = job.store
         job = converter.fetch(uid)
@@ -64,8 +54,7 @@ module Heathen
           converter.new_job(file.fetch(:tempfile), name: file.fetch(:filename))
 
         elsif !(url = params[:url]).empty?
-          # for now, force text/html for all urls
-          converter.fetch_url(url).tap { |j| j.meta[:format] = :html }
+          converter.fetch_url(url)
         end
       end
 

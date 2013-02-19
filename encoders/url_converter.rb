@@ -1,29 +1,23 @@
 module Heathen
-  module Processors
-    class HtmlConverter < Base
+  module Encoders
+    class UrlConverter < Base
 
-      MIME_TYPES = [ 'text/html' ]
-
-      # return a [ content, meta ] pair, as expcted
-      # by dragonfly
-      def html_to_pdf(temp_object, args = { })
-        if content = to_pdf(temp_object.data)
-          [ content, meta(temp_object, :pdf, 'application/pdf') ]
-        else
-          raise Heathen::NotConverted.new({
-               temp_object: temp_object,
-                    action: 'html_to_pdf',
-            original_error: nil
-          })
+      class << self
+        def encodes?(job)
+          !job.meta[:url].empty?
         end
       end
 
-      def url_to_pdf(temp_object, args = { })
+      def encode(temp_object, format, args = { })
+
+        if format != :pdf || temp_object.meta[:url].empty?
+          throw :unable_to_handle
+        end
 
         uri = URI.parse(temp_object.meta.fetch(:url))
         abs = absolutify(temp_object.data, uri)
 
-        if content = to_pdf(abs)
+        if content = PDFKit.new(abs).to_pdf
           [ content, meta(temp_object, :pdf, 'application/pdf') ]
         else
           raise Heathen::NotConverted.new({
@@ -52,10 +46,6 @@ module Heathen
           end
 
           string
-        end
-
-        def to_pdf(source)
-          PDFKit.new(source).to_pdf
         end
     end
   end

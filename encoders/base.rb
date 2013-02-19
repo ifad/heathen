@@ -1,5 +1,5 @@
 module Heathen
-  module Processors
+  module Encoders
     class Base
 
       MIME_TYPES = %{ }
@@ -7,8 +7,17 @@ module Heathen
       attr_reader :app
 
       class << self
+
+        def inherited(sub)
+          (@subclasses ||= [ ]) << sub
+        end
+
         def valid_mime_type?(mime_type)
           return self::MIME_TYPES.include?(mime_type)
+        end
+
+        def can_encode?(job)
+          @subclasses.any? { |sub| sub.encodes?(job) }
         end
       end
 
@@ -26,6 +35,10 @@ module Heathen
           })
         end
 
+    end
+
+    def self.can_encode?(job)
+      Base.can_encode?(job)
     end
   end
 end

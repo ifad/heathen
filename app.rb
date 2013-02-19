@@ -21,20 +21,15 @@ module Heathen
         body    Yajl::Encoder.encode(data)
       end
 
-      def build_job job, action
-        args = extract_args(action)
-        (job.respond_to?(action) ? job.send(action, args) : job.process(action, args))
+      def extract_args(action)
+        case action
+          when 'ocr' then { :language => params[:language] }
+          else { }
+        end
       end
 
-      def extract_args action
-        args = { }
-
-        case action
-          when "ocr"
-            args[:language] = params[:language] if params[:language]
-        end
-
-        args
+      def build_job(job, action)
+        (job.respond_to?(action) ? job.send(action, extract_args(action)) : job.encode(:pdf, extract_args(action)))
       end
     end
 
@@ -46,26 +41,22 @@ module Heathen
 
       action = params[:action]
 
-      unless Heathen::PROCESSORS.include?(action)
+      unless ACTIONS.include?(action)
         return json_response({
-             error: "Unsupported action",
-            action: action
+          error: "Unsupported action",
+          action: action
         }, 400)
       end
 
       inquisitor = Inquisitor.new(converter, params)
-      url_base   = url('/')
+      url_base   = url('/').gsub(/\/$/, '')
       job        = inquisitor.job
 
       unless job
         return json_response({
-             error: 'Action not supported for file',
-            action: action
+          error: 'Action not supported for file',
+          action: action
         }, 400)
-      end
-
-      if url_base.end_with?('/')
-        url_base.chop!
       end
 
       json_response({

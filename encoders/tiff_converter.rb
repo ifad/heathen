@@ -1,10 +1,19 @@
 module Heathen
-  module Processors
+  module Encoders
     class TiffConverter < Base
 
       MIME_TYPES = [ 'image/tiff' ]
 
-      def tiff_split( temp_object )
+      class << self
+
+        # tiff converter doesn't actually encode anything directly,
+        # but it's used internally for ocr
+        def encodes?(job)
+          false
+        end
+      end
+
+      def tiff_split(temp_object)
         if content = split(temp_object.path)
           [ temp_object, meta(temp_object, :tiff, "image/tiff", pages: content) ]
         else
@@ -61,9 +70,9 @@ module Heathen
 
         def to_html(source, args = { })
 
-      params = []
-      params << "-l #{args[:language]}" if args[:language]
-      params << "hocr"
+          params = []
+          params << "-l #{args[:language]}" if args[:language]
+          params << "hocr"
 
           [ "tesseract", source, source.gsub(/\.tif$/, "")] + params + [app.root + "/config/tesseract_hocr.conf" ]
 

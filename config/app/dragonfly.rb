@@ -6,8 +6,8 @@ module Heathen
       module Dragonfly
         def self.configure(app)
 
-          require "#{app.root}/processors/base"
-          Dir["#{app.root}/processors/**/*.rb"].each { |f| require f }
+          require "#{app.root}/encoders/base"
+          Dir["#{app.root}/encoders/**/*.rb"].each { |f| require f }
 
           ::Dragonfly[:converter].tap do |converter|
 
@@ -25,11 +25,10 @@ module Heathen
               c.root_path = "#{app.storage_root}/file"
             end
 
-            converter.processor.register(::Heathen::Processors::OfficeConverter, app)
-            converter.processor.register(::Heathen::Processors::HtmlConverter,   app)
-            converter.processor.register(::Heathen::Processors::TiffConverter,   app)
-
-                #converter.encoder.register(  ::Heathen::Encoders::ImageEncoder,      app)
+            converter.encoder.register(::Heathen::Encoders::OfficeConverter, app)
+            converter.encoder.register(::Heathen::Encoders::HtmlConverter,   app)
+            converter.encoder.register(::Heathen::Encoders::UrlConverter,    app)
+            converter.encoder.register(::Heathen::Encoders::TiffConverter,   app)
 
             app.set :converter, converter
 
@@ -53,7 +52,7 @@ module Heathen
 
         def self.define_jobs(config)
           config.job :image_to_pdf do
-            process(:convert, "-quiet -density 72", :pdf)
+            encode(:pdf, "-quiet -density 72")
           end
 
           config.job :ocr do |args|

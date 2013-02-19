@@ -1,6 +1,6 @@
 module Heathen
 
-  PROCESSORS = %w{
+  ACTIONS = %w{
     office_to_pdf
     html_to_pdf
     url_to_pdf

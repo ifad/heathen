@@ -18,7 +18,7 @@
       <div id="actions">
         <label>Action:</label>
         <select name="action">
-          <%= Heathen::PROCESSORS.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n") %>
+          <%= Heathen::ACTIONS.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n") %>
         </select>
       </div>
       <div id="languages" style="display: none">
@@ -34,10 +34,18 @@
     <script language="javascript">
       $(document).ready(function() {
         $("#actions").on("change", "select", function(e) {
-          var v = $(this).val();
+          var action = $(this).val();
 
-          $("#url").toggle(v=="url_to_pdf");
-          $("#file").toggle(v!="url_to_pdf");
+          $("#url").toggle(action == 'url_to_pdf');
+          $("#file").toggle(action != 'url_to_pdf');
+
+          if(action == "url_to_pdf") {
+            $("#url").val('');
+          }
+          else {
+            $("#file").val('');
+          }
+
           $("#languages").toggle(v=="ocr");
         });
       });
