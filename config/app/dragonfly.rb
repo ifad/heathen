@@ -9,9 +9,6 @@ module Heathen
           require "#{app.root}/processors/base"
           Dir["#{app.root}/processors/**/*.rb"].each { |f| require f }
 
-          require "#{app.root}/encoders/base"
-          Dir["#{app.root}/encoders/**/*.rb"].each { |f| require f }
-
           ::Dragonfly[:converter].tap do |converter|
 
             converter.configure_with(:imagemagick)
