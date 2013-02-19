@@ -31,16 +31,16 @@
       <input type="submit" value="Convert" />
     </form>
 
-  <script language="javascript">
-    $(document).ready(function() {
-      $("#actions").on("change", "select", function(e) {
-        var v = $(this).val();
+    <script language="javascript">
+      $(document).ready(function() {
+        $("#actions").on("change", "select", function(e) {
+          var v = $(this).val();
 
-        $("#url").toggle(v=="url_to_pdf");
-        $("#file").toggle(v!="url_to_pdf");
-        $("#languages").toggle(v=="ocr");
+          $("#url").toggle(v=="url_to_pdf");
+          $("#file").toggle(v!="url_to_pdf");
+          $("#languages").toggle(v=="ocr");
+        });
       });
-    });
-  </script>
+    </script>
   </body>
 </html>

@@ -44,7 +44,7 @@ module Heathen
 
     post '/convert' do
 
-      action   = params[:action]
+      action = params[:action]
 
       unless Heathen::PROCESSORS.include?(action)
         return json_response({
