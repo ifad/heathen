@@ -13,7 +13,9 @@ module Heathen
             app.set :storage_root, Pathname.new(ENV['HEATHEN_STORAGE_ROOT'])
           end
 
-          FileUtils.mkdir_p app.storage_root + "tmp"
+          app.set :cache_storage_root, app.storage_root + "cache"
+
+          FileUtils.mkdir_p app.storage_root
         end
       end
     end

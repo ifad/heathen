@@ -80,13 +80,13 @@ end
 namespace :heathen do
   desc 'Clears the cache, causing access to existing conversion urls to reprocess content'
   task :clear_cache, roles: :app do
-    run 'rm -rf /opt/repofiles/heathen/cache/*'
+    run "cd #{release_path}; #{rake} heathen:cache:clear RACK_ENV=#{rack_env}"
   end
 
   namespace :redis do
-    desc "Clean the redis database keys"
-    task :clean do
-      run "cd #{release_path}; #{rake} heathen:redis:clean RACK_ENV=#{rack_env}"
+    desc "Clear the redis database keys"
+    task :clear do
+      run "cd #{release_path}; #{rake} heathen:redis:clear RACK_ENV=#{rack_env}"
     end
   end
 end
