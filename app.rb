@@ -27,6 +27,7 @@ module Heathen
     end
 
     post '/convert' do
+      redirect relative_url_root unless params[:url] || params[:file]
 
       action = params[:action]
 

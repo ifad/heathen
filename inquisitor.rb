@@ -52,7 +52,7 @@ module Heathen
           converter.log.info "\n\n\nfile: #{file.inspect}"
           converter.new_job(file.fetch(:tempfile), name: file.fetch(:filename))
 
-        elsif !(url = params[:url]).empty?
+        elsif url = params[:url]
           converter.fetch_url(url)
         end
       end
