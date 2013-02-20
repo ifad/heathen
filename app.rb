@@ -14,11 +14,11 @@ module Heathen
     Config.configure(self)
 
     helpers do
-      def json_response(data, code = 200)
+      def json_response(data, code = 200, options = { })
         data.merge!(params) if data.has_key?(:error)
         status  code
         headers "Content-type" => "application/json"
-        body    Yajl::Encoder.encode(data)
+        body    Yajl::Encoder.encode(data.merge(options))
       end
     end
 
@@ -33,6 +33,7 @@ module Heathen
       unless ACTIONS.include?(action)
         return json_response({
           error: "Unsupported action",
+          supported_actions: Heathen::ACTIONS,
           action: action
         }, 400)
       end
