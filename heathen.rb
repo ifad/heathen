@@ -1,17 +1,8 @@
 module Heathen
 
-  ACTIONS = %w{
-    office_to_pdf
-    html_to_pdf
-    url_to_pdf
-    image_to_pdf
-    ocr
-  }
+  ACTIONS = %w{ pdf ocr }
 
-  LANGUAGES = %w{
-    eng
-    spa
-  }
+  LANGUAGES = %w{ eng spa }
 
   class NotConverted < RuntimeError
     attr_reader :temp_object, :action, :original_error

@@ -7,11 +7,19 @@
   <body class="application">
     <h4>Convert the Heathens!</h4>
     <form action="<%= url('/convert') %>" method="POST" enctype="multipart/form-data">
+      <div id="input_type">
+        <label>
+          <input type="radio" name="input_type" value="file" checked="true" /> File
+        </label>
+        <label>
+          <input type="radio" name="input_type" value="url" /> URL
+        </label>
+      </div>
       <div id="file">
         <label>File:</label>
         <input type="file" name="file"/>
       </div>
-      <div id="url" style="display: none">
+      <div id="url">
         <label>URL:</label>
         <input type="text" name="url"/>
       </div>
@@ -32,21 +40,28 @@
     </form>
 
     <script language="javascript">
-      $(document).ready(function() {
+        $(document).ready(function() {
+
+        $('input[name=\"input_type\"]').on('change', function() {
+          switch($(this).val()) {
+            case "file":
+              $("#file").show();
+              $("#url").hide();
+              $("#url").val('');
+              break;
+
+            case "url":
+              $("#file").hide();
+              $("#url").show();
+              $("#file").val('');
+              break;
+          }
+        });
+
+        $("#url").hide();
+
         $("#actions").on("change", "select", function(e) {
-          var action = $(this).val();
-
-          $("#url").toggle(action == 'url_to_pdf');
-          $("#file").toggle(action != 'url_to_pdf');
-
-          if(action == "url_to_pdf") {
-            $("#url").val('');
-          }
-          else {
-            $("#file").val('');
-          }
-
-          $("#languages").toggle(action == "ocr");
+          $("#languages").toggle($(this).val() == "ocr");
         });
       });
     </script>
