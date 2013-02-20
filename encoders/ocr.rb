@@ -21,6 +21,8 @@ module Heathen
         end
 
         if content = to_pdf(temp_object, pages: pages)
+          cleanup(pages)
+          temp_object.meta.delete(:pages)
           [ content, meta(temp_object, :pdf, "application/pdf") ]
         else
           raise Heathen::NotConverted.new({
@@ -53,6 +55,14 @@ module Heathen
             end
           rescue
             return nil
+          end
+        end
+
+        def cleanup(pages)
+          pages.each do |page|
+            html = Pathname(page.to_s.gsub(/tiff?$/, "html"))
+            page.unlink
+            html.unlink
           end
         end
     end
