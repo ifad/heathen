@@ -19,18 +19,23 @@ namespace :heathen do
   namespace :cache do
     desc 'Clear the cache, causing access to existing conversion urls to reprocess content'
     task :clear do
-      cmd = "rm -rf #{Heathen::App.cache_storage_root + '*'}"
-      puts cmd
-      exec cmd
+      sh "rm -rf #{Heathen::App.cache_storage_root + '*'}"
+    end
+  end
+
+  namespace :temp do
+    desc 'Clear the temp storage (useful for development)'
+    task :clear do
+      sh "rm -rf #{Heathen::App.temp_storage_root + '*'}"
     end
   end
 
   desc 'Clear the redis keys and the cache'
-  task :clear => [ 'redis:clear', 'cache:clear' ]
+  task :clear => [ 'redis:clear', 'cache:clear', 'temp:clear' ]
 
   desc "Run a console"
   task :console do
-    exec "irb -r #{$app}"
+    sh "irb -r #{$app}"
   end
 end
 
