@@ -20,17 +20,6 @@ module Heathen
         headers "Content-type" => "application/json"
         body    Yajl::Encoder.encode(data)
       end
-
-      def extract_args(action)
-        case action
-          when 'ocr' then { :language => params[:language] }
-          else { }
-        end
-      end
-
-      def build_job(job, action)
-        (job.respond_to?(action) ? job.send(action, extract_args(action)) : job.encode(:pdf, extract_args(action)))
-      end
     end
 
     get '/' do
@@ -61,7 +50,7 @@ module Heathen
 
       json_response({
         original:  job.url(host: url_base),
-        converted: build_job(job, action).url(host: url_base)
+        converted: (job.respond_to?(action) ? job.send(action) : job.encode(:pdf)).url(host: url_base)
       })
     end
 

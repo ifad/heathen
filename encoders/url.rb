@@ -1,6 +1,6 @@
 module Heathen
   module Encoders
-    class UrlConverter < Base
+    class Url < Base
 
       class << self
         def encodes?(job)

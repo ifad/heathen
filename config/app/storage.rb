@@ -13,9 +13,13 @@ module Heathen
             app.set :storage_root, Pathname.new(ENV['HEATHEN_STORAGE_ROOT'])
           end
 
+          app.set :file_storage_root,  app.storage_root + "file"
           app.set :cache_storage_root, app.storage_root + "cache"
+          app.set :temp_storage_root,  app.storage_root + "tmp"
 
-          FileUtils.mkdir_p app.storage_root
+          [ :storage_root, :file_storage_root, :cache_storage_root, :temp_storage_root ].each do |setting|
+            FileUtils.mkdir_p(app.send(setting))
+          end
         end
       end
     end

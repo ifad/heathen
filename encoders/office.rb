@@ -1,6 +1,6 @@
 module Heathen
   module Encoders
-    class OfficeConverter < Base
+    class Office < Base
 
       MIME_TYPES = [
         'application/zip', # For DOCX files.
@@ -11,12 +11,6 @@ module Heathen
         'application/vnd.ms-powerpoint',
         'application/vnd.openxmlformats-officedocument.presentationml.presentation'
       ]
-
-      class << self
-        def encodes?(job)
-          valid_mime_type?(job.mime_type)
-        end
-      end
 
       # return a [ content, meta ] pair, as expcted
       # by dragonfly

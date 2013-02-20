@@ -7,7 +7,10 @@ module Heathen
         def self.configure(app)
 
           require "#{app.root}/encoders/base"
-          Dir["#{app.root}/encoders/**/*.rb"].each { |f| require f }
+          require "#{app.root}/processors/base"
+
+          Dir["#{app.root}/encoders/**/*.rb"].each   { |f| require f }
+          Dir["#{app.root}/processors/**/*.rb"].each { |f| require f }
 
           ::Dragonfly[:converter].tap do |converter|
 
@@ -22,13 +25,15 @@ module Heathen
             end
 
             converter.datastore.configure do |c|
-              c.root_path = "#{app.storage_root}/file"
+              c.root_path = app.file_storage_root.to_s
             end
 
-            converter.encoder.register(::Heathen::Encoders::OfficeConverter, app)
-            converter.encoder.register(::Heathen::Encoders::HtmlConverter,   app)
-            converter.encoder.register(::Heathen::Encoders::UrlConverter,    app)
-            converter.encoder.register(::Heathen::Encoders::TiffConverter,   app)
+            converter.encoder.register(::Heathen::Encoders::Office, app)
+            converter.encoder.register(::Heathen::Encoders::Html,   app)
+            converter.encoder.register(::Heathen::Encoders::Url,    app)
+            converter.encoder.register(::Heathen::Encoders::Ocr,    app)
+
+            converter.processor.register(::Heathen::Processors::Ocr, app)
 
             app.set :converter, converter
 
@@ -55,11 +60,10 @@ module Heathen
             encode(:pdf, "-quiet -density 72")
           end
 
-          config.job :ocr do |args|
+          config.job :ocr do
             encode(:tiff)
-            process(:tiff_split)
-            process(:tiff_to_html, args)
-            process(:tiff_to_pdf)
+            process(:ocr)
+            encode(:pdf)
           end
         end
       end

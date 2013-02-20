@@ -14,7 +14,6 @@ module Heathen
     end
 
     def can_convert?(job)
-      debugger
       job.image? || Encoders.can_encode?(job)
     end
 

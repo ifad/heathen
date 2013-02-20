@@ -19,6 +19,11 @@ module Heathen
         def can_encode?(job)
           @subclasses.any? { |sub| sub.encodes?(job) }
         end
+
+        # default implementation
+        def encodes?(job)
+          valid_mime_type?(job.mime_type)
+        end
       end
 
       def initialize(app)

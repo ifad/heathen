@@ -1,14 +1,8 @@
 module Heathen
   module Encoders
-    class HtmlConverter < Base
+    class Html < Base
 
       MIME_TYPES = [ 'text/html' ]
-
-      class << self
-        def encodes?(job)
-          valid_mime_type?(job.mime_type)
-        end
-      end
 
       # return a [ content, meta ] pair, as expcted
       # by dragonfly
