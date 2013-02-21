@@ -41,9 +41,11 @@ Heathen requires the following libraries/binaries to be installed, and the versi
 * tesseract           (3.02.02)
     
 To install, clone this repository:
+
 `git clone git@github.com:ifad/heathen.git`
 
 Then bundle:
+
 `bundle`
 
 If you're using OpenSuSE, we maintain all these binary dependences as RPM packages [on the SuSE build server](https://build.opensuse.org/project/show?project=home%3Avjt:ifad), so they are just a `zypper ar` and a `zypper install` away.
