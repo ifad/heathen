@@ -45,6 +45,8 @@ To install, clone this repository:
 Then bundle:
 `bundle`
 
+If you're using OpenSuSE, we maintain all these binary dependences as RPM packages [on the SuSE build server](https://build.opensuse.org/project/show?project=home%3Avjt:ifad), so they are just a `zypper ar` and a `zypper install` away.
+
 ## Running
 You need to specify where Heathen will store files by setting the `HEATHEN_STORAGE_ROOT` environment variable. Heathen creates three subdirectories at this path: `cache`, `file`, and `tmp`.
 
