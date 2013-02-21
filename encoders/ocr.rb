@@ -9,7 +9,7 @@ module Heathen
 
       class << self
         def encodes?(job)
-          super && present?(job.meta[:pages])
+          super && job.meta[:format] == :ocr
         end
       end
 
@@ -19,7 +19,7 @@ module Heathen
 
         pages = temp_object.meta[:pages]
 
-        unless format == :pdf && self.class.valid_mime_type?(temp_object.meta[:mime_type]) && present?(pages)
+        unless format == :pdf && temp_object.meta[:format] == :ocr && present?(pages)
           throw :unable_to_handle
         end
 

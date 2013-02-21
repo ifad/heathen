@@ -16,7 +16,7 @@ module Heathen
 
         executioner.quartering(commands)
 
-        [ temp_object, temp_object.meta.merge(pages: pages) ]
+        [ temp_object, temp_object.meta.merge(format: :ocr, pages: pages) ]
       end
 
       private

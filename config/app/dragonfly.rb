@@ -61,6 +61,7 @@ module Heathen
           end
 
           config.job :ocr do
+            process(:convert, '-colorspace Gray -depth 1')
             encode(:tiff)
             process(:ocr)
             encode(:pdf)
