@@ -34,10 +34,11 @@ Why you might want to use Heathen:
 
 Heathen requires the following libraries/binaries to be installed, and the versions given are those with which Heathen has been tested:
 
-* LibreOffice (3.6)
-* ImageMagick (6.8.2-4)
-* wkhtmltopdf (0.9.6)
-* tesseract   (3.02.02)
+* LibreOffice + PyUNO (3.6)
+* Python              (2.7)
+* ImageMagick         (6.8.2-4)
+* wkhtmltopdf         (0.9.6)
+* tesseract           (3.02.02)
     
 To install, clone this repository:
 `git clone git@github.com:ifad/heathen.git`
