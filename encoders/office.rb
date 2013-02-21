@@ -44,13 +44,8 @@ module Heathen
 
           FileUtils.ln(file.path, temp_name)
 
-          if app.development?
-            executioner.execute("ruby", "#{app.root}/bin/libreoffice-stub.rb",
-                                app.ooo_host, app.ooo_port, source, temp_name)
-          else
-            executioner.execute('python', "#{app.root}/bin/DocumentConverter.py",
-                                app.ooo_host, app.ooo_port, source, temp_name)
-          end
+          executioner.execute('python', "#{app.root}/bin/DocumentConverter.py",
+                              app.ooo_host, app.ooo_port, source, temp_name)
 
           FileUtils.rm(temp_name)
 
