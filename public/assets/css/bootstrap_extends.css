@@ -44,3 +44,10 @@
 .container > footer p {
   text-align: center;
 }
+.form-horizontal .control-label {
+  line-height: 42px;
+}
+.form-horizontal .controls input[type=file] {
+  line-height: 12px;
+  vertical-align: baseline;
+}
