@@ -6,6 +6,7 @@ require 'heathen'
 require 'config'
 require 'executioner'
 require 'inquisitor'
+require 'utils'
 
 module Heathen
 
@@ -14,6 +15,7 @@ module Heathen
     Config.configure(self)
 
     helpers do
+      include Heathen::Utils
       def json_response(data, code = 200, options = { })
         data.merge!(params) if data.has_key?(:error)
         status  code
@@ -27,9 +29,19 @@ module Heathen
     end
 
     post '/convert' do
-      redirect relative_url_root unless params[:url] || params[:file]
 
       action = params[:action]
+
+      unless present?(params[:url]) || present?(params[:file])
+        if request.accept.include?("application/json")
+          return json_response({
+            error: "Invalid parameters: 'file' or 'url' required",
+            action: action
+          }, 400)
+        else
+          redirect(url('/'))
+        end
+      end
 
       unless ACTIONS.include?(action)
         return json_response({
