@@ -2,11 +2,14 @@ module Heathen
   module Encoders
     class Ocr < Base
 
+      include Heathen::Utils
+      extend Heathen::Utils
+
       MIME_TYPES = [ 'image/tiff' ]
 
       class << self
         def encodes?(job)
-          super && !job.meta[:pages].empty?
+          super && present?(job.meta[:pages])
         end
       end
 
@@ -16,7 +19,7 @@ module Heathen
 
         pages = temp_object.meta[:pages]
 
-        unless format == :pdf && self.class.valid_mime_type?(temp_object.meta[:mime_type]) && !pages.empty?
+        unless format == :pdf && self.class.valid_mime_type?(temp_object.meta[:mime_type]) && present?(pages)
           throw :unable_to_handle
         end
 

@@ -2,15 +2,18 @@ module Heathen
   module Encoders
     class Url < Base
 
+      include Heathen::Utils
+      extend Heathen::Utils
+
       class << self
         def encodes?(job)
-          job.meta.include?(:url) && !job.meta[:url].empty?
+          present?(job.meta[:url])
         end
       end
 
       def encode(temp_object, format, args = { })
 
-        if format != :pdf || !temp_object.meta.include?(:url) || temp_object.meta[:url].empty?
+        if format != :pdf || blank?(temp_object.meta[:url])
           throw :unable_to_handle
         end
 
