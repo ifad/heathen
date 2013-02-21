@@ -39,6 +39,7 @@ Heathen requires the following libraries/binaries to be installed, and the versi
 * ImageMagick         (6.8.2-4)
 * wkhtmltopdf         (0.9.6)
 * tesseract           (3.02.02)
+* redis               (2.4.15)
     
 To install, clone this repository:
 
