@@ -58,7 +58,8 @@ You need to specify where Heathen will store files by setting the `HEATHEN_STORA
 * With [pow](http://pow.cx/):
     
     Add the following to your .powenv file:
-    ```export HEATHEN_STORAGE_ROOT="/path/to/storage"
+    ```
+    export HEATHEN_STORAGE_ROOT="/path/to/storage"
     export RACK_ENV="<environment>"
     ```
 
