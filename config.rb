@@ -4,7 +4,6 @@ module Heathen
 
       app.configure do
         app.set :relative_url_root, (ENV['RACK_RELATIVE_URL_ROOT'] || '')
-        app.set :public_folder, Proc.new { File.join(root, "static") }
       end
 
       app.helpers do
