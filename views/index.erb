@@ -13,13 +13,13 @@
         </label>
       </div>
     </div>
-    <div id="file" for="file" class="control-group">
+    <div id="file" for="file" class="control-group source">
       <label class="control-label">File:</label>
       <div class="controls">
         <input type="file" name="file" placeholder="File" />
       </div>
     </div>
-    <div id="url" class="hidden control-group">
+    <div id="url" class="hidden control-group source">
       <label class="control-label" for="url">URL:</label>
       <div class="controls">
         <input type="text" name="url" placeholder="URL" disabled="disabled" />
@@ -48,34 +48,3 @@
     </div>
   </form>
 </div>
-<script language="javascript">
-    $(document).ready(function() {
-
-    $('input[name=\"input_type\"]').on('change', function() {
-      switch($(this).val()) {
-        case "file":
-          $("#file").show().find("input[name=\"file\"]").prop("disabled", false);
-          $("#url").hide().find("input[name=\"url\"]").prop("disabled", true);
-          $("#url").val('');
-          break;
-
-        case "url":
-          $("#file").hide().find("input[name=\"file\"]").prop("disabled", true);
-          $("#url").show().find("input[name=\"url\"]").prop("disabled", false);
-          $("#file").val('');
-          break;
-      }
-    });
-
-    $("#url").hide();
-
-    $("#actions").on("change", "select", function(e) {
-      if($(this).val() == "ocr") {
-        $("input[name=\"input_type\"][value=\"file\"]").prop("checked", true).trigger("change");
-      }
-
-      $("#input_type").toggle($(this).val() != "ocr");
-      $("#languages").toggle($(this).val() == "ocr");
-    });
-  });
-</script>
