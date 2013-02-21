@@ -38,7 +38,8 @@ i.logo-image {
 .ascii-name pre {
   font-family: 'courier';
   text-align: center;
-  background: none;
+  background-color: #000;
   border: none;
+  color: #14F53C;
 }
 
