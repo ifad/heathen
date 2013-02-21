@@ -30,6 +30,10 @@ module Heathen
         @app = app
       end
 
+      def executioner
+        @executioner ||= Heathen::Executioner.new(app.converter.log)
+      end
+
       protected
 
         def meta(temp_object, format, mime, args = { })

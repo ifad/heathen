@@ -41,7 +41,6 @@ module Heathen
           result_file = source.path.gsub(/tiff?$/, "pdf")
 
           begin
-            executioner = Heathen::Executioner.new(app.converter.log)
             executioner.execute('ruby', "#{app.root}/bin/patched_pdfbeads.rb", "--bg-compression", 'JPG', "-o", result_file, *pages, dir: dir)
 
             file = File.open(result_file, "r")

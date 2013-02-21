@@ -69,8 +69,9 @@ module Heathen
 
     def quartering(heretics)
       @heretics = heretics
+      parallel  = (@heretics.size > 4 ? 4 : @heretics.size)
 
-      (0..3).collect do |i|
+      parallel.times.collect do
         guilty = @heretics.shift
         Thread.fork { slaughter guilty }
       end.map(&:join)

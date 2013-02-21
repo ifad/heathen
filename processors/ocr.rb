@@ -14,7 +14,6 @@ module Heathen
           to_html(page, language: temp_object.meta[:language])
         end
 
-        executioner = Heathen::Executioner.new(app.converter.log)
         executioner.quartering(commands)
 
         [ temp_object, temp_object.meta.merge(pages: pages) ]
@@ -32,7 +31,6 @@ module Heathen
           begin
             base = app.temp_storage_root + source.basename.to_s.gsub(/\.tiff?$/i, "_")
 
-            executioner = Heathen::Executioner.new(app.converter.log)
             executioner.execute('convert', '-quiet', '-scene', '0', source.to_s, base.to_s + "%05d.tif")
 
             if executioner.last_exit_status == 0

@@ -4,13 +4,13 @@ module Heathen
 
       class << self
         def encodes?(job)
-          !job.meta[:url].empty?
+          job.meta.include?(:url) && !job.meta[:url].empty?
         end
       end
 
       def encode(temp_object, format, args = { })
 
-        if format != :pdf || temp_object.meta[:url].empty?
+        if format != :pdf || !temp_object.meta.include?(:url) || temp_object.meta[:url].empty?
           throw :unable_to_handle
         end
 

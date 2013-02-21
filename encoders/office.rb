@@ -37,8 +37,6 @@ module Heathen
         # calling method is responsible for closing/unlinking
         def to_pdf(source)
 
-          executioner = Heathen::Executioner.new(app.converter.log)
-
           file = Tempfile.new("#{app.storage_root}/tmp/heathen")
           file.chmod 0666
 
