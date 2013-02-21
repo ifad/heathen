@@ -12,7 +12,7 @@ set(:rack_env)     { stage }
 require 'capistrano/ext/multistage'
 
 # Repository settings
-set :repository,    "git@mine.ifad.org:heathen.git"
+set :repository,    "git@github.com:ifad/heathen.git"
 set :scm,           "git"
 set :branch,        fetch(:branch, "master")
 set :deploy_via,    :remote_cache
