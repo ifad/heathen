@@ -8,7 +8,6 @@ i.logo-image {
   width: 24px;
   height: 24px;
   margin-right: 5px;
-  background: url(//lleir.ifad.dev/quasar/assets/logo.png) no-repeat center center #000000;
 }
 .navbar .brand .logo {
   font-weight: bold;
@@ -34,5 +33,12 @@ i.logo-image {
 }
 .environment {
   color: #F00;
+}
+
+.ascii-name pre {
+  font-family: 'courier';
+  text-align: center;
+  background: none;
+  border: none;
 }
 

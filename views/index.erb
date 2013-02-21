@@ -1,49 +1,53 @@
-<form action="<%= url('/convert') %>" method="POST" enctype="multipart/form-data" class="form-horizontal">
-  <div id="input_type" class="control-group">
-    <div class="controls">
-      <label class="checkbox">
-        <input type="radio" name="input_type" value="file" checked="true" /> File
-      </label>
-      <label class="checkbox">
-        <input type="radio" name="input_type" value="url" /> URL
-      </label>
+<h1>
+  Convert the Heathens!
+</p>
+<div class="well">
+  <form action="<%= url('/convert') %>" method="POST" enctype="multipart/form-data" class="form-horizontal">
+    <div id="input_type" class="control-group">
+      <div class="controls">
+        <label class="radio inline">
+          <input type="radio" name="input_type" value="file" checked="true" /> File
+        </label>
+        <label class="radio inline">
+          <input type="radio" name="input_type" value="url" /> URL
+        </label>
+      </div>
     </div>
-  </div>
-  <div id="file" class="control-group">
-    <label class="control-label">File:</label>
-    <div class="controls">
-      <input type="file" name="file" placeholder="File" />
+    <div id="file" for="file" class="control-group">
+      <label class="control-label">File:</label>
+      <div class="controls">
+        <input type="file" name="file" placeholder="File" />
+      </div>
     </div>
-  </div>
-  <div id="url" style="display: none" class="control-group">
-    <label class="control-label">URL:</label>
-    <div class="controls">
-      <input type="text" name="url" placeholder="URL" disabled="disabled" />
+    <div id="url" class="hidden control-group">
+      <label class="control-label" for="url">URL:</label>
+      <div class="controls">
+        <input type="text" name="url" placeholder="URL" disabled="disabled" />
+      </div>
     </div>
-  </div>
-  <div id="actions" class="control-group">
-    <label class="control-label">Action:</label>
-    <div class="controls">
-      <select name="action">
-        <%= Heathen::ACTIONS.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n") %>
-      </select>
+    <div id="actions" class="control-group">
+      <label class="control-label">Action:</label>
+      <div class="controls">
+        <select name="action">
+          <%= Heathen::ACTIONS.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n") %>
+        </select>
+      </div>
     </div>
-  </div>
-  <div id="languages" style="display: none" class="control-group">
-    <label class="control-label">Language:</label>
-    <div class="controls">
-      <select name="language">
-        <%= Heathen::LANGUAGES.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n") %>
-      </select>
+    <div id="languages" style="display: none" class="control-group">
+      <label class="control-label">Language:</label>
+      <div class="controls">
+        <select name="language">
+          <%= Heathen::LANGUAGES.map { |p| %{<option value="#{p}">#{p.gsub("_", " ")}</option>} }.join("\n") %>
+        </select>
+      </div>
     </div>
-  </div>
-  <div class="control-group">
-    <div class="controls">
-      <input type="submit" value="Convert" class="btn" />
+    <div class="control-group">
+      <div class="controls">
+        <input type="submit" value="Convert" class="btn" />
+      </div>
     </div>
-  </div>
-</form>
-
+  </form>
+</div>
 <script language="javascript">
     $(document).ready(function() {
 
