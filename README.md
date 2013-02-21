@@ -17,7 +17,7 @@ Heathen is a service for converting pretty much anything to PDF, where "anything
 * Images
 * HTML/Images found at a URL
     
-Additionally, given a TIFF as input, Heathen can parse text found in the image and generate a PDF that is searchable and has selectable text.
+Additionally, given an image as input, Heathen can parse text found in the image and generate a PDF that is searchable and has selectable text.
 
 There is a client gem [here](https://github.com/ifad/heathen-client): https://github.com/ifad/heathen-client.
 
@@ -28,7 +28,7 @@ Why you might want to use Heathen:
 
 * Word is evil and must be purified.
 * You are writing a web application (or many web applications) that need to be able to produce PDFs. With Heathen, you just write your document as a normal HTML document and send it off to Heathen to get a PDF.
-* You are an organization that has many scanned documents stored as TIFF files and are therefore not searchable or indexable. Send them off to Heathen and get searchable, selectable PDFs.
+* You are an organization that has many scanned documents stored as images that are therefore not searchable or indexable. Send them off to Heathen and get searchable, selectable PDFs.
     
 ## Installation & Prerequisites
 
@@ -70,7 +70,7 @@ While Heathen is meant to be used as an API (see https://github.com/ifad/heathen
 
 Navigate to the app, select a word document to upload, and select `pdf` from the `Action` select box. Submit the form and if everything goes well, you will see some JSON data containing two urls, keyed by `original` and `converted`. Navigate to the `converted` url and wait for the browser to ask where you want to save your pdf.
 
-Now upload a TIFF file containing some text, like a scanned document. Follow the same steps, and note that your pdf has selectable text and is searchable.
+Now upload an image containing some text, like a scanned document. Follow the same steps, and note that your pdf has selectable text and is searchable.
 
 Re-visit the `converted` url and note that the response is immediate.
 
