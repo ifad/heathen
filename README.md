@@ -52,6 +52,7 @@ Then bundle:
 If you're using OpenSuSE, we maintain all these binary dependences as RPM packages [on the SuSE build server](https://build.opensuse.org/project/show?project=home%3Avjt:ifad), so they are just a `zypper ar` and a `zypper install` away.
 
 ## Running
+
 You need to specify where Heathen will store files by setting the `HEATHEN_STORAGE_ROOT` environment variable. Heathen creates three subdirectories at this path: `cache`, `file`, and `tmp`.
 
 * With rackup:
@@ -67,6 +68,12 @@ You need to specify where Heathen will store files by setting the `HEATHEN_STORA
     ```
 
 Additionally, if you plan on running Heathen at a subdirectory, for example, `http://my.webapps.example.com/heathen`, you will need to set `RACK_RELATIVE_URL_ROOT="/heathen"`
+
+**NOTE**: For Word/Excel conversion, heathen needs a LibreOffice/OpenOffice daemon running, listening on `localhost` on TCP port `8100`. This is the command we use to start it (make sure `libreoffice-pyuno` is installed):
+
+```
+soffice --headless --accept='socket,host=127.0.0.1,port=8100;urp;'
+```
 
 **NOTE**: If you are running Heathen behind [Unicorn](http://unicorn.bogomips.org/) or something similar, you will need to increase the allowed response time to be much greater than 30 seconds. There are plans to make Heathen behave asynchronously in the future which should avoid the need for this kind of configuration.
 
