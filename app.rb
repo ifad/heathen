@@ -53,19 +53,19 @@ module Heathen
 
       inquisitor = Inquisitor.new(converter, params)
       url_base   = url('/').gsub(/\/$/, '')
-      job        = inquisitor.job
 
-      unless job
-        return json_response({
-          error: 'Action not supported for file',
-          action: action
-        }, 400)
+      job, convertable = inquisitor.job
+
+      response = { original:  job.url(host: url_base) }
+
+      if convertable
+        response.merge({
+          converted: (job.respond_to?(action) ? job.send(action) : job.encode(:pdf)).url(host: url_base)
+        })
       end
 
-      json_response({
-        original:  job.url(host: url_base),
-        converted: (job.respond_to?(action) ? job.send(action) : job.encode(:pdf)).url(host: url_base)
-      })
+      json_response(response)
+
     end
 
     get '/*' do

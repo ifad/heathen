@@ -28,17 +28,13 @@ module Heathen
       else
         job.meta.merge!(meta_data.merge(:mime_type => job.mime_type))
 
-        unless can_convert?(job)
-          return nil
-        end
-
         uid = job.store
         job = converter.fetch(uid)
 
         redis[key] = job.serialize
       end
 
-      job
+      [job, can_convert?(job)]
     end
 
     private
