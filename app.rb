@@ -59,7 +59,7 @@ module Heathen
       response = { original:  job.url(host: url_base) }
 
       if convertable
-        response.merge({
+        response.merge!({
           converted: (job.respond_to?(action) ? job.send(action) : job.encode(:pdf)).url(host: url_base)
         })
       end
