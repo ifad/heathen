@@ -54,11 +54,22 @@ module Heathen
       inquisitor = Inquisitor.new(converter, params)
       url_base   = url('/').gsub(/\/$/, '')
 
-      job, convertable = inquisitor.job
+      job, convertible = inquisitor.job
 
       response = { original:  job.url(host: url_base) }
 
-      if convertable
+      # if the converted document is part of the parameters,
+      # the 'converted' url is just a fetch for that file
+      if converted = params[:converted]
+
+        converted_job = converter.new_job(converted.fetch(:tempfile), name: converted.fetch(:filename))
+        converted_uid = converted_job.store
+
+        response.merge!({
+          converted: converter.fetch(converted_uid).url(host: url_base)
+        })
+
+      elsif convertible
         response.merge!({
           converted: (job.respond_to?(action) ? job.send(action) : job.encode(:pdf)).url(host: url_base)
         })
