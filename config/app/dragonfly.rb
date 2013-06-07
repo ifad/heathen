@@ -28,6 +28,7 @@ module Heathen
               c.root_path = app.file_storage_root.to_s
             end
 
+            converter.encoder.register(::Heathen::Encoders::Pdf,    app)
             converter.encoder.register(::Heathen::Encoders::Office, app)
             converter.encoder.register(::Heathen::Encoders::Html,   app)
             converter.encoder.register(::Heathen::Encoders::Url,    app)

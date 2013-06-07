@@ -14,7 +14,7 @@ module Heathen
     end
 
     def can_convert?(job)
-      job.image? || Encoders.can_encode?(job)
+      job.mime_type == 'application/pdf' || job.image? || Encoders.can_encode?(job)
     end
 
     def job
