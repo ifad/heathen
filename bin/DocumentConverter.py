@@ -58,7 +58,7 @@ EXPORT_FILTER_MAP = {
     "doc": {
         FAMILY_TEXT: { "FilterName": "MS Word 97" }
     },
-    "doc": {
+    "docx": {
         FAMILY_TEXT: { "FilterName": "MS Word 2007 XML" }
     },
     "rtf": {
