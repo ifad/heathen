@@ -2,6 +2,8 @@ module Heathen
   module Encoders
     class Office < Base
 
+      include Common
+
       MIME_TYPES = [
         'application/zip', # For DOCX files.
         'application/msword',
@@ -20,7 +22,7 @@ module Heathen
           throw :unable_to_handle
         end
 
-        if content = to_pdf(temp_object.path)
+        if content = libreoffice(temp_object.path, :pdf)
           [ content, meta(temp_object, :pdf, 'application/pdf') ]
         else
           raise Heathen::NotConverted.new({
@@ -30,34 +32,6 @@ module Heathen
           })
         end
       end
-
-      private
-
-        # returns a Tempfile instance.
-        # calling method is responsible for closing/unlinking
-        def to_pdf(source)
-
-          file = Tempfile.new("#{app.storage_root}/tmp/heathen")
-          file.chmod 0666
-
-          temp_name = [ file.path, 'pdf' ].join('.')
-
-          FileUtils.ln(file.path, temp_name)
-
-          executioner.execute('python', "#{app.root}/bin/DocumentConverter.py",
-                              app.ooo_host, app.ooo_port, source, temp_name)
-
-          FileUtils.rm(temp_name)
-
-          file.close
-
-          if executioner.last_exit_status == 0
-            return file
-          else
-            file.unlink
-            return nil
-          end
-        end
     end
   end
 end

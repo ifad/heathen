@@ -1,6 +1,6 @@
 module Heathen
 
-  ACTIONS = %w{ pdf ocr }
+  ACTIONS = %w{ pdf ocr docx }
 
   LANGUAGES = %w{ eng spa }
 

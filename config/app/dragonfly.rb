@@ -33,6 +33,7 @@ module Heathen
             converter.encoder.register(::Heathen::Encoders::Html,   app)
             converter.encoder.register(::Heathen::Encoders::Url,    app)
             converter.encoder.register(::Heathen::Encoders::Ocr,    app)
+            converter.encoder.register(::Heathen::Encoders::Libre,  app)
 
             converter.processor.register(::Heathen::Processors::Ocr, app)
 
@@ -59,6 +60,10 @@ module Heathen
         def self.define_jobs(config)
           config.job :image_to_pdf do
             encode(:pdf, "-quiet -density 72")
+          end
+
+          config.job :docx do
+            encode(:docx)
           end
 
           config.job :ocr do
