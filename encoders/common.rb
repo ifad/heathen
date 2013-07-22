@@ -4,8 +4,8 @@ module Heathen
 
       def mime_for(format)
         case format
-          when :pdf  then 'application/pdf'
-          when :docx then 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          when :pdf then 'application/pdf'
+          when :doc then 'application/msword'
         end
       end
 

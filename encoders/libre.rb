@@ -15,7 +15,7 @@ module Heathen
       # by dragonfly
       def encode(temp_object, format, args = { })
 
-        unless [ :pdf, :docx ].include?(format) && self.class.valid_mime_type?(temp_object.meta[:mime_type])
+        unless [ :pdf, :doc ].include?(format) && self.class.valid_mime_type?(temp_object.meta[:mime_type])
           throw :unable_to_handle
         end
 

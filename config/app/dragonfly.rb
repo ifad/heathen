@@ -62,8 +62,8 @@ module Heathen
             encode(:pdf, "-quiet -density 72")
           end
 
-          config.job :docx do
-            encode(:docx)
+          config.job :doc do
+            encode(:doc)
           end
 
           config.job :ocr do
