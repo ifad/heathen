@@ -27,6 +27,7 @@ GEM
       rubinius-actor
     highline (1.6.15)
     hpricot (0.8.6)
+    iconv (1.0.4)
     kgio (2.7.4)
     multi_json (1.6.1)
     net-scp (1.0.4)
@@ -74,6 +75,7 @@ DEPENDENCIES
   capistrano-ext (~> 1.2.1)
   dragonfly (~> 0.9.12)
   hpricot (~> 0.8.6)
+  iconv
   pdfbeads (~> 1.0.9)
   pdfkit (~> 0.5.2)
   rack-cache (~> 1.2)

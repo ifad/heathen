@@ -12,6 +12,7 @@ gem 'wkhtmltopdf-binary', '~> 0.9.9.1'
 gem 'rake',               '~> 10.0.3'
 gem 'hpricot',            '~> 0.8.6'
 gem 'rmagick',            '~> 2.13.2'
+gem 'iconv'
 
 group :staging, :production do
   gem 'unicorn'
