@@ -6,10 +6,11 @@ gem 'redis-namespace',    '~> 1.2.1'
 gem 'dragonfly',          '~> 0.9.12'
 gem 'rack-cache',         '~> 1.2'
 gem 'pdfkit',             '~> 0.5.2'
-gem 'pdfbeads',           '~> 1.0.9'
 gem 'wkhtmltopdf-binary', '~> 0.9.9.1'
 gem 'rake',               '~> 10.0.3'
 gem 'nokogiri'
+
+gem 'pdfbeads', github: 'ifad/pdfbeads'
 
 group :development do
   gem 'capistrano',         '~> 2.13.5'
@@ -23,9 +24,6 @@ platform :ruby do
   gem 'yajl-ruby', '~> 1.1.0'
   gem 'rmagick'
   gem 'unicorn'
-
-  gem 'iconv' # FIXME required by pdfbeads
-  gem 'hpricot' # FIXME required by pdfbeads
 end
 
 platform :jruby do
