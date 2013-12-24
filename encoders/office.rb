@@ -1,3 +1,5 @@
+require 'encoders/common'
+
 module Heathen
   module Encoders
     class Office < Base
