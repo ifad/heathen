@@ -1,7 +1,7 @@
 $: << File.expand_path(".")
 
 require 'sinatra/base'
-require 'yajl'
+require 'multi_json'
 require 'heathen'
 require 'config'
 require 'executioner'
@@ -20,7 +20,7 @@ module Heathen
         data.merge!(params) if data.has_key?(:error)
         status  code
         headers "Content-type" => "application/json"
-        body    Yajl::Encoder.encode(data.merge(options))
+        body    MultiJson.encode(data.merge(options))
       end
     end
 
