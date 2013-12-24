@@ -44,6 +44,9 @@ module Heathen
           result_file = source.path.gsub(/tiff?$/, "pdf")
 
           begin
+            # FIXME this is a ruby program, as such should be loaded in
+            # heathen's address space. Executing it every time with jRuby will
+            # slow down processing considerably.
             executioner.execute('ruby', Gem.bin_path('pdfbeads', 'pdfbeads'), "--bg-compression", 'JPG', "-o", result_file, *pages, dir: dir)
 
             file = File.open(result_file, "r")
