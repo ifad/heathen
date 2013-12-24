@@ -1,6 +1,8 @@
 module Heathen
   module Config
     def self.configure(app)
+      secret = "#{app.root}/config/secret.rb"
+      load secret if File.exists?(secret)
 
       app.configure do
         app.set :relative_url_root, (ENV['RACK_RELATIVE_URL_ROOT'] || '')

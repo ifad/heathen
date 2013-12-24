@@ -5,13 +5,7 @@ module Heathen
     module App
       class Storage
         def self.configure(app)
-          app.configure :staging, :production do
-            app.set :storage_root, Pathname.new('/opt/repofiles/heathen')
-          end
-
-          app.configure :development do
-            app.set :storage_root, Pathname.new(ENV['HEATHEN_STORAGE_ROOT'])
-          end
+          app.set :storage_root, Pathname.new(ENV['HEATHEN_STORAGE_ROOT'] || './storage').realpath
 
           app.set :file_storage_root,  app.storage_root + "file"
           app.set :cache_storage_root, app.storage_root + "cache"
