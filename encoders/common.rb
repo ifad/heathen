@@ -32,6 +32,10 @@ module Heathen
           file.unlink
           return nil
         end
+
+      rescue
+        file.unlink
+        raise
       end
     end
   end
