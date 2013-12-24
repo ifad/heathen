@@ -5,6 +5,9 @@ GEM
       builder
       girl_friday
     builder (3.1.4)
+    byebug (2.5.0)
+      columnize (~> 0.3.6)
+      debugger-linecache (~> 1.2.0)
     capistrano (2.13.5)
       highline
       net-scp (>= 1.0.0)
@@ -15,13 +18,7 @@ GEM
       capistrano (>= 1.0.0)
     columnize (0.3.6)
     connection_pool (0.9.3)
-    debugger (1.2.2)
-      columnize (>= 0.3.1)
-      debugger-linecache (~> 1.1.1)
-      debugger-ruby_core_source (~> 1.1.5)
-    debugger-linecache (1.1.2)
-      debugger-ruby_core_source (>= 1.1.1)
-    debugger-ruby_core_source (1.1.5)
+    debugger-linecache (1.2.0)
     dragonfly (0.9.14)
       multi_json (~> 1.0)
       rack
@@ -72,9 +69,9 @@ PLATFORMS
 
 DEPENDENCIES
   airbrake (~> 3.1.6)
+  byebug
   capistrano (~> 2.13.5)
   capistrano-ext (~> 1.2.1)
-  debugger
   dragonfly (~> 0.9.12)
   hpricot (~> 0.8.6)
   pdfbeads (~> 1.0.9)

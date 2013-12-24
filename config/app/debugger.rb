@@ -4,8 +4,7 @@ module Heathen
       module Debugger
         def self.configure(app)
           app.configure :development do
-            require 'debugger'
-            # ::Debugger.start_remote
+            require RUBY_VERSION.to_f >= 2.0 ? 'byebug' : 'debugger'
           end
         end
       end

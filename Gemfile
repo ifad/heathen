@@ -18,8 +18,11 @@ group :staging, :production do
 end
 
 group :development do
-  gem 'debugger'
   gem 'capistrano',         '~> 2.13.5'
   gem 'capistrano-ext',     '~> 1.2.1'
   gem 'airbrake',           '~> 3.1.6'
+end
+
+platform :ruby do
+  gem RUBY_VERSION.to_f >= 2.0 ? 'byebug' : 'debugger'
 end

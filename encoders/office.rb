@@ -2,7 +2,7 @@ module Heathen
   module Encoders
     class Office < Base
 
-      include Common
+      include Heathen::Encoders::Common
 
       MIME_TYPES = [
         'application/zip', # For DOCX files.

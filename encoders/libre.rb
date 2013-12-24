@@ -4,7 +4,7 @@ module Heathen
   module Encoders
     class Libre < Base
 
-      include Common
+      include Heathen::Encoders::Common
 
       MIME_TYPES = [
         'application/zip', # For ODT files.
