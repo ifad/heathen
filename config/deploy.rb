@@ -54,11 +54,11 @@ namespace :deploy do
       run '/home/rails/bin/setup_permissions'
     end
 
-    desc '[internal] Symlink rbenv version'
-    task :symlink_rbenv_version, :except => { :no_release => true } do
-      run "ln -s #{deploy_to}/.rbenv-version #{release_path}"
+    desc '[internal] Symlink ruby version'
+    task :symlink_ruby_version, :except => { :no_release => true } do
+      run "ln -s #{deploy_to}/.ruby-version #{release_path}"
     end
-    after 'deploy:update_code', 'deploy:ifad:symlink_rbenv_version'
+    after 'deploy:update_code', 'deploy:ifad:symlink_ruby_version'
   end
 
   namespace :secret do
