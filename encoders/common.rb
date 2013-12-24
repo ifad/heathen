@@ -12,7 +12,7 @@ module Heathen
       # returns a Tempfile instance.
       # calling method is responsible for closing/unlinking
       def libreoffice(source, extension = :pdf)
-        file = Tempfile.new("#{app.storage_root}/tmp/heathen")
+        file = Tempfile.new('heathen')
         file.chmod 0666
 
         temp_name = [ file.path, extension.to_s ].join('.')
