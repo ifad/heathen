@@ -7,6 +7,7 @@ gem 'dragonfly',          '~> 0.9.12'
 gem 'rack-cache',         '~> 1.2'
 gem 'pdfkit',             '~> 0.5.2'
 gem 'rake',               '~> 10.0.3'
+gem 'wkhtmltopdf-binary'
 
 group :development do
   gem 'capistrano',         '~> 2.13.5'
