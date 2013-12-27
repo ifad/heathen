@@ -7,31 +7,31 @@ module Heathen
       @logger = log
     end
 
-      def execute(*argv)
-        options = argv.last.class == Hash ? argv.pop : {}
+    def execute(*argv)
+      options = argv.last.class == Hash ? argv.pop : {}
 
-        started = Time.now.to_f
+      started = Time.now.to_f
 
-        command = argv.map(&:to_s)
+      command = argv.map(&:to_s)
 
-        pid, status, out, err = _execute(*command, options)
+      pid, status, out, err = _execute(*command, options)
 
-        elapsed = Time.now.to_f - started
+      elapsed = Time.now.to_f - started
 
-        if status != 0
-          logger.error "[#{pid}] exited with status #{status.inspect}"
-        end
-        logger.info("[#{pid}] completed in %02.4f" % elapsed)
-
-        logger.info "  stdout: '#{out}'\n" unless out.blank?
-        logger.info "  stderr: '#{err}'\n" unless err.blank?
-
-        @last_exit_status = status
-        @last_messages = {stdout: out, stderr: err}
-        @last_command = command.join(' ')
-
-        return status
+      if status != 0
+        logger.error "[#{pid}] exited with status #{status.inspect}"
       end
+      logger.info("[#{pid}] completed in %02.4f" % elapsed)
+
+      logger.info "  stdout: '#{out}'\n" unless out.blank?
+      logger.info "  stderr: '#{err}'\n" unless err.blank?
+
+      @last_exit_status = status
+      @last_messages = {stdout: out, stderr: err}
+      @last_command = command.join(' ')
+
+      return status
+    end
 
     if RUBY_PLATFORM == 'java'
       # Executes the given argument vector with ProcessBuilder.
