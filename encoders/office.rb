@@ -1,10 +1,8 @@
-require 'encoders/common'
-
 module Heathen
   module Encoders
     class Office < Base
 
-      include Heathen::Encoders::Common
+      include Concerns::Libreoffice
 
       MIME_TYPES = [
         'application/zip', # For DOCX files.

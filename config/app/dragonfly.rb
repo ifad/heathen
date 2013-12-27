@@ -9,8 +9,8 @@ module Heathen
           require "#{app.root}/encoders/base"
           require "#{app.root}/processors/base"
 
-          Dir["#{app.root}/encoders/**/*.rb"].each   { |f| require f }
-          Dir["#{app.root}/processors/**/*.rb"].each { |f| require f }
+          Dir["#{app.root}/encoders/**/*.rb"].sort.each   { |f| require f }
+          Dir["#{app.root}/processors/**/*.rb"].sort.each { |f| require f }
 
           ::Dragonfly[:converter].tap do |converter|
 

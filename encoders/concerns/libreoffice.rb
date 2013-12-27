@@ -1,6 +1,6 @@
 module Heathen
   module Encoders
-    module Common
+    module Concerns::Libreoffice
 
       def mime_for(format)
         case format
