@@ -13,6 +13,7 @@ group :development do
   gem 'capistrano-ext',     '~> 1.2.1'
   gem 'airbrake',           '~> 3.1.6'
   gem 'pry'
+  gem 'shotgun'
 end
 
 platform :ruby do
