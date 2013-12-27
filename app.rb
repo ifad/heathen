@@ -85,6 +85,8 @@ module Heathen
       rescue Heathen::NotConverted => e
         json_response({
              error: "Unable to convert",
+    original_error: e.original_error,
+           command: e.command,
             action: e.action,
               name: e.temp_object.name
         }, 500)

@@ -23,6 +23,7 @@ module Heathen
           raise Heathen::NotConverted.new({
                temp_object: temp_object,
                     action: "odt_to_#{format}",
+                   command: executioner.last_command,
             original_error: executioner.last_messages
           })
         end

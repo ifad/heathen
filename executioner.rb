@@ -1,7 +1,7 @@
 module Heathen
 
   class Executioner
-    attr_reader :logger, :last_exit_status, :last_messages
+    attr_reader :logger, :last_exit_status, :last_messages, :last_command
 
     def initialize(log)
       @logger = log
@@ -12,7 +12,9 @@ module Heathen
 
         started = Time.now.to_f
 
-        pid, status, out, err = _execute(*argv.map(&:to_s), options)
+        command = argv.map(&:to_s)
+
+        pid, status, out, err = _execute(*command, options)
 
         elapsed = Time.now.to_f - started
 
@@ -26,6 +28,7 @@ module Heathen
 
         @last_exit_status = status
         @last_messages = {stdout: out, stderr: err}
+        @last_command = command.join(' ')
 
         return status
       end

@@ -28,6 +28,7 @@ module Heathen
           raise Heathen::NotConverted.new({
                temp_object: temp_object,
                     action: 'office_to_pdf',
+                   command: executioner.last_command,
             original_error: executioner.last_messages
           })
         end
