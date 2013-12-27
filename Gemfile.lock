@@ -55,7 +55,6 @@ GEM
       net-ssh (>= 2.6.5)
     nokogiri (1.6.1)
       mini_portile (~> 0.5.0)
-    pdfkit (0.5.4)
     pry (0.9.12.4)
       coderay (~> 1.0)
       method_source (~> 0.8)
@@ -112,7 +111,6 @@ DEPENDENCIES
   iconv
   json
   pdfbeads!
-  pdfkit (~> 0.5.2)
   pry
   puma
   rack-cache (~> 1.2)

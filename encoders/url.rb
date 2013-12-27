@@ -2,6 +2,8 @@ module Heathen
   module Encoders
     class Url < Base
 
+      include Concerns::Wkhtmltopdf
+
       include Heathen::Utils
       extend Heathen::Utils
 
@@ -18,38 +20,19 @@ module Heathen
         end
 
         uri = URI.parse(temp_object.meta.fetch(:url))
-        abs = absolutify(temp_object.data, uri)
 
-        if content = PDFKit.new(abs).to_pdf
+        if content = wkhtmltopdf(uri)
           [ content, meta(temp_object, :pdf, 'application/pdf') ]
         else
           raise Heathen::NotConverted.new({
                temp_object: temp_object,
                     action: 'url_to_pdf',
-            original_error: nil
+                   command: executioner.last_command,
+            original_error: executioner.last_messages
           })
         end
       end
 
-      private
-
-        def absolutify(source, uri)
-
-          string = source.dup
-          pos    = 0
-
-          while data = string.match(/(?:href|src)=['"](.+?)['"]/, pos)
-
-            rel = URI.parse(data[1]) rescue nil
-            pos = data.end(1)
-
-            if rel && rel.host.nil?
-              string[data.begin(1) ... pos] = (uri + rel).to_s
-            end
-          end
-
-          string
-        end
     end
   end
 end

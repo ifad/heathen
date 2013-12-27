@@ -5,7 +5,6 @@ gem 'redis',              '~> 3.0.2'
 gem 'redis-namespace',    '~> 1.2.1'
 gem 'dragonfly',          '~> 0.9.12'
 gem 'rack-cache',         '~> 1.2'
-gem 'pdfkit',             '~> 0.5.2'
 gem 'rake',               '~> 10.0.3'
 gem 'wkhtmltopdf-binary'
 
