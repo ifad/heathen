@@ -1,7 +1,7 @@
 module Heathen
 
   class Executioner
-    attr_reader :logger, :last_exit_status
+    attr_reader :logger, :last_exit_status, :last_messages
 
     def initialize(log)
       @logger = log
@@ -24,7 +24,10 @@ module Heathen
         logger.info "  stdout: '#{out}'\n" unless out.blank?
         logger.info "  stderr: '#{err}'\n" unless err.blank?
 
-        return (@last_exit_status = status)
+        @last_exit_status = status
+        @last_messages = {stdout: out, stderr: err}
+
+        return status
       end
 
     if RUBY_PLATFORM == 'java'
