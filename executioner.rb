@@ -7,64 +7,87 @@ module Heathen
       @logger = log
     end
 
-    # Executes the given argument vector with fork/exec.
-    # Returns the command standard output as a String.
-    #
-    # ----------------------------------------------------------
-    # You'd say, "why don't you just use system()"?
-    #
-    # Because every security conscious coder knows that escaping
-    # shell specials is a fragile and error prone practice, that
-    # it can be worked around, and most importantly it is a very
-    # complex code flow that happens behind the scenes and it is
-    # really not worth the saving of writing a simple fork/exec.
-    #
-    # Also using a pipe pair allows to print the commands output
-    # inside a log file for easier debugging when something will
-    # go (badly) wrong (tm).
-    #
-    #   - vjt  Sun Feb 21 20:30:09 CET 2010
-    #
-    def execute(*argv)
+      def execute(*argv)
+        options = argv.last.class == Hash ? argv.pop : {}
 
-      stdout, stdout_w = IO.pipe
-      stderr, stderr_w = IO.pipe
+        started = Time.now.to_f
 
-      started = Time.now.to_f
-      command = argv.shift
+        pid, status, out, err = _execute(*argv.map(&:to_s), options)
 
-      options = argv.pop if argv.last.class == Hash
+        elapsed = Time.now.to_f - started
 
-      pid = fork {
-        stdout.close; STDOUT.reopen(stdout_w)
-        stderr.close; STDERR.reopen(stderr_w)
+        if status != 0
+          logger.error "[#{pid}] exited with status #{status.inspect}"
+        end
+        logger.info("[#{pid}] completed in %02.4f" % elapsed)
 
-        if options && options[:dir]
-          logger.info "chdir '#{options[:dir]}'"
-          Dir.chdir(options[:dir])
+        logger.info "  stdout: '#{out}'\n" unless out.blank?
+        logger.info "  stderr: '#{err}'\n" unless err.blank?
+
+        return (@last_exit_status = status)
+      end
+
+    if RUBY_PLATFORM == 'java'
+      # Executes the given argument vector with ProcessBuilder.
+      # Returns the pid and exit status as Numeric, stdout and
+      # stderr as Strings.
+      #
+      def _execute(*argv, options)
+
+        builder = java.lang.ProcessBuilder.new
+        builder.command(argv)
+
+        if options[:dir]
+          dir = java.io.File.new(options[:dir])
+          builder.directory(dir)
         end
 
-        # exec [command, argv[0] ] -- For prettier ps(1) listings :-)
-        Kernel::exec [ command, "heathen: #{command}" ], *(argv.map(&:to_s))
-      }
-      logger.info "[#{pid}] spawn '#{command} #{argv.join(' ')}'"
+        process = builder.start()
 
-      stdout_w.close; stderr_w.close
-      pid, status = Process.wait2
-      elapsed = Time.now.to_f - started
+        # Dirty hack, works on UNIX only.
+        pid = if process.is_a?(Java::JavaLang::UNIXProcess)
+          prop = process.get_class.get_declared_field('pid')
+          prop.set_accessible true
+          prop.get_int(process)
+        end
 
-      out, err = stdout.read.chomp, stderr.read.chomp
-      stdout.close; stderr.close
+        logger.info "[#{pid}] spawn '#{argv.join(' ')}'"
 
-      if status.exitstatus != 0
-        logger.error "[#{pid}] exited with status #{status.exitstatus.inspect}"
+        process.wait_for
+
+        out = process.get_input_stream.to_io.read
+        err = process.get_error_stream.to_io.read
+
+        [pid, process.exit_value, out, err]
       end
-      logger.info("[#{pid}] completed in %02.4f" % elapsed)
 
-      logger.info "  stdout: '#{out}'\n" unless out.blank?
-      logger.info "  stderr: '#{err}'\n" unless err.blank?
+    else
+      # Executes the given argument vector with Process.spawn.
+      # Returns the pid and exit status as Numeric, stdout and
+      # stderr as Strings.
+      #
+      def _execute(*argv, options)
+        stdout, stdout_w = IO.pipe
+        stderr, stderr_w = IO.pipe
 
-      return (@last_exit_status = status.exitstatus)
+        command = argv.shift
+        pid = Process.spawn(ENV,
+          # exec [command, argv[0] ] -- For prettier ps(1) listings :-)
+          [ command, "heathen: #{command}" ], *argv,
+          :chdir => options[:dir] || Dir.getwd,
+          1 => stdout_w.fileno,
+          2 => stderr_w.fileno
+        )
+        logger.info "[#{pid}] spawn '#{command} #{argv.join(' ')}'"
+
+        stdout_w.close; stderr_w.close
+        pid, status = Process.wait2
+
+        out, err = stdout.read.chomp, stderr.read.chomp
+        stdout.close; stderr.close
+
+        [pid, status.exitstatus, out, err]
+      end
     end
 
     def quartering(heretics)
