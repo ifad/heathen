@@ -27,6 +27,14 @@ module Heathen
           })
         end
       end
+
+      private
+        def mime_for(format)
+          case format
+            when :pdf then 'application/pdf'
+            when :doc then 'application/msword'
+          end
+        end
     end
   end
 end

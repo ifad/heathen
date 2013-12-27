@@ -2,13 +2,6 @@ module Heathen
   module Encoders
     module Concerns::Libreoffice
 
-      def mime_for(format)
-        case format
-          when :pdf then 'application/pdf'
-          when :doc then 'application/msword'
-        end
-      end
-
       # returns a Tempfile instance.
       # calling method is responsible for closing/unlinking
       def libreoffice(source, extension = :pdf)
