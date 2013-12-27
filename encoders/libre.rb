@@ -22,7 +22,7 @@ module Heathen
         else
           raise Heathen::NotConverted.new({
                temp_object: temp_object,
-                    action: 'office_to_pdf',
+                    action: "odt_to_#{format}",
             original_error: nil
           })
         end
