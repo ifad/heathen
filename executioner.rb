@@ -1,7 +1,8 @@
 module Heathen
 
   class Executioner
-    attr_reader :logger, :last_exit_status, :last_messages, :last_command
+    attr_reader :logger, :last_exit_status, :last_messages, :last_command,
+      :stdout, :stderr
 
     def initialize(log)
       @logger = log
@@ -14,7 +15,7 @@ module Heathen
 
       command = argv.map(&:to_s)
 
-      pid, status, out, err = _execute(*command, options)
+      pid, status, @stdout, @stderr = _execute(*command, options)
 
       elapsed = Time.now.to_f - started
 
@@ -23,11 +24,11 @@ module Heathen
       end
       logger.info("[#{pid}] completed in %02.4f" % elapsed)
 
-      logger.info "  stdout: '#{out}'\n" unless out.blank?
-      logger.info "  stderr: '#{err}'\n" unless err.blank?
+      logger.info "  stdout: '#@stdout'\n" unless @stdout.blank? unless options[:binary]
+      logger.info "  stderr: '#@stderr'\n" unless @stderr.blank?
 
       @last_exit_status = status
-      @last_messages = {stdout: out, stderr: err}
+      @last_messages = {stdout: @stdout, stderr: @stderr}
       @last_command = command.join(' ')
 
       return status
