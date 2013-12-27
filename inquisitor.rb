@@ -49,7 +49,7 @@ module Heathen
           converter.new_job(file.fetch(:tempfile), name: file.fetch(:filename))
 
         elsif url = params[:url]
-          converter.fetch_url(url)
+          converter.new_job(params[:url], name: params[:url].gsub(/[^\w]+/, '-'))
         end
       end
 
