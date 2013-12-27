@@ -1,5 +1,4 @@
 .bundle
-Gemfile.lock
 tmp/
 log/
 config/secret.rb
