@@ -69,31 +69,33 @@ module Heathen
       end
 
     else
-      # Executes the given argument vector with Process.spawn.
+      require 'open3'
+
+      # Executes the given argument vector with Open3.popen3.
       # Returns the pid and exit status as Numeric, stdout and
       # stderr as Strings.
       #
       def _execute(*argv, options)
-        stdout, stdout_w = IO.pipe
-        stderr, stderr_w = IO.pipe
-
         command = argv.shift
-        pid = Process.spawn(ENV,
-          # exec [command, argv[0] ] -- For prettier ps(1) listings :-)
-          [ command, "heathen: #{command}" ], *argv,
-          :chdir => options[:dir] || Dir.getwd,
-          1 => stdout_w.fileno,
-          2 => stderr_w.fileno
-        )
-        logger.info "[#{pid}] spawn '#{command} #{argv.join(' ')}'"
 
-        stdout_w.close; stderr_w.close
-        pid, status = Process.wait2
+        Open3.popen3(ENV, [ command, "heathen: #{command}" ], *argv,
+          :chdir => options[:dir] || Dir.getwd
+        ) do |stdin, stdout, stderr, wait_thr|
+          pid = wait_thr[:pid]
+          logger.info "[#{pid}] spawn '#{command} #{argv.join(' ')}'"
 
-        out, err = stdout.read.chomp, stderr.read.chomp
-        stdout.close; stderr.close
+          stdin.close
 
-        [pid, status.exitstatus, out, err]
+          if options[:binary]
+            stdout.binmode
+            stderr.binmode
+          end
+
+          out = Thread.new { stdout.read }.value
+          err = Thread.new { stderr.read }.value
+
+          [pid, wait_thr.value, out, err]
+        end
       end
     end
 
