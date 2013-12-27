@@ -6,11 +6,7 @@ gem 'redis-namespace',    '~> 1.2.1'
 gem 'dragonfly',          '~> 0.9.12'
 gem 'rack-cache',         '~> 1.2'
 gem 'pdfkit',             '~> 0.5.2'
-gem 'wkhtmltopdf-binary', '~> 0.9.9.1'
 gem 'rake',               '~> 10.0.3'
-gem 'nokogiri'
-
-gem 'pdfbeads', github: 'ifad/pdfbeads'
 
 group :development do
   gem 'capistrano',         '~> 2.13.5'
@@ -25,6 +21,7 @@ platform :ruby do
   gem 'rmagick'
   gem 'unicorn'
   gem 'iconv'
+  gem 'pdfbeads', github: 'ifad/pdfbeads'
 end
 
 platform :jruby do
