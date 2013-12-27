@@ -24,6 +24,7 @@ platform :ruby do
   gem 'yajl-ruby', '~> 1.1.0'
   gem 'rmagick'
   gem 'unicorn'
+  gem 'iconv'
 end
 
 platform :jruby do
