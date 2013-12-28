@@ -49,7 +49,11 @@ module Heathen
           converter.new_job(file.fetch(:tempfile), name: file.fetch(:filename))
 
         elsif url = params[:url]
-          converter.new_job(params[:url], name: params[:url].gsub(/[^\w]+/, '-'))
+          # Cache URLs for at most 60 seconds
+          ts = Time.now.to_i
+          ts -= ts % 60
+
+          converter.new_job([params[:url], ts.to_s].join(' '), name: params[:url].gsub(/[^\w]+/, '-'))
         end
       end
 
