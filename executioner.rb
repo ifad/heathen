@@ -60,12 +60,20 @@ module Heathen
 
         logger.info "[#{pid}] spawn '#{argv.join(' ')}'"
 
-        process.wait_for
+        stdout = process.get_input_stream.to_io
+        stderr = process.get_error_stream.to_io
 
-        out = process.get_input_stream.to_io.read
-        err = process.get_error_stream.to_io.read
+        if options[:binary]
+          stdout.binmode
+          stderr.binmode
+        end
 
-        [pid, process.exit_value, out, err]
+        wait_thr = Thread.new { process.wait_for; process.exit_value }
+
+        out = Thread.new { stdout.read }.value
+        err = Thread.new { stderr.read }.value
+
+        [pid, wait_thr.value, out, err]
       end
 
     else
