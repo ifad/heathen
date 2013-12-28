@@ -15,7 +15,7 @@ module Heathen
           '-', # print results on stdout
           :binary => true)
 
-        if executioner.last_exit_status == 0
+        if executioner.last_exit_status == 0 && executioner.stdout.size > 0
           executioner.stdout
         end
       end
