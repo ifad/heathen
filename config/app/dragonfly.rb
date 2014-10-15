@@ -6,7 +6,6 @@ module Dragonfly
 
       private
         def convert(temp_object=nil, args='', format=nil)
-          byebug
           tempfile = new_tempfile(format)
           run convert_command, %(#{args} #{quote(temp_object.path) if temp_object} #{quote(tempfile.path)})
           tempfile
