@@ -81,7 +81,6 @@ module Heathen
 
     get '/*' do
       begin
-            byebug
         converter.call(env)
       rescue Heathen::NotConverted => e
         json_response({
