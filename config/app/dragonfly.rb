@@ -1,5 +1,19 @@
 require 'dragonfly'
 
+module Dragonfly
+  module ImageMagick
+    module Utils
+
+      private
+        def convert(temp_object=nil, args='', format=nil)
+          tempfile = new_tempfile(format)
+          run convert_command, %(#{args} #{quote(temp_object.path) if temp_object} #{quote(tempfile.path)})
+          tempfile
+        end
+    end
+  end
+end
+
 module Heathen
   module Config
     module App
@@ -60,8 +74,7 @@ module Heathen
           end
 
           config.job :ocr do
-            process(:convert, '-colorspace Gray -depth 1')
-            encode(:tiff)
+            process(:convert, '-depth 8 -density 300 -background white +matte', 'tiff')
             process(:ocr)
             encode(:pdf)
           end
