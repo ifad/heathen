@@ -1,0 +1,7 @@
+%p You submitted a document conversion request. Here are the results:
+%br
+  - documents.each do |doc|
+    - if doc[:content].nil?
+      %p #{doc[:orig_filename]} was not converted (#{doc[:error]})
+    - else
+      %p #{doc[:orig_filename]} was converted successfully

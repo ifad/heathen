@@ -63,8 +63,8 @@ module Heathen
         def cleanup(pages)
           pages.each do |page|
             html = Pathname(page.to_s.gsub(/tiff?$/, "html"))
-            page.unlink
-            html.unlink
+            page.unlink rescue nil
+            html.unlink rescue nil
           end
         end
     end

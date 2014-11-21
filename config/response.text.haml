@@ -1,0 +1,8 @@
+:plain
+  You submitted a document conversion request. Here are the results:
+
+- documents.each do |doc|
+  - if doc[:content].nil?
+    #{doc[:orig_filename]} was not converted (#{doc[:error]})
+  - else
+    #{doc[:orig_filename]} was converted successfully

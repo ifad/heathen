@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+#
+# Script:      heathen_mailstream
+# Description: This script takes an encoded mail message from standard input and forwards
+#              any attachments of the allowed MIME types to a Heathen server for translation.
+#
+#              The resulting translated files are then delivered in accordance with the
+#              command line switches provided.
+#
+# Usage:       {mailfile} | heathen_mailstream { -r | -t EMAIL | -d DIR | -s } {opts}
+#
+# Options:     -r      return converted files to sender email address
+#              -e      send converted files to the specified mail inbox
+#              -d      save the files locally to the specified directory
+#              -s      don't deliver, just output a summary
+#
+#              run "heathen_mailstream -h" to get a list of other options, which are basically
+#              configuration settings for mail host, heathen server, etc. It is also possible
+#              to load all of the configuration from a YAML file (-C flag).
+#
+require 'optparse'
+require 'pathname'
+$: << Pathname.new(__FILE__).realpath.parent.parent + 'lib'
+require 'processor'
+
+cfg = {}
+
+OptionParser.new do |opts|
+  opts.on( '-r', '--return-to-sender', 'Converted files will be emailed back to sender' ) { cfg[:mode] = :email; cfg[:email] = :return_to_sender }
+  opts.on( '-t', '--to EMAIL', 'Converted files will be emailed to this address' ) { |e| cfg[:mode] = :email; cfg[:email] = e }
+  opts.on( '-e', '--directory DIR', 'Converted files will be stored in this directory' ) { |d| cfg[:mode] = :directory; cfg[:directory] = d }
+  opts.on( '-s', '--summary', 'Don\'t deposit the converted file, just log a summary' ) { cfg[:mode] = :summary }
+  opts.on( '-o', '--operation OPERATION', ['ocr','pdf','doc'], 'Conversion operation to request from Heathen' ) { |o| cfg[:operation] = o }
+  opts.on( '-M', '--mail-host MAILHOST', 'Mail server for sending replies' ) { |h| cfg[:mail_host] = h }
+  opts.on( '-P', '--mail-port PORT', Integer, 'Mail server port' ) { |p| cfg[:mail_port] = p }
+  opts.on( '-H', '--heathen-host HOST', 'Heathen server name' ) { |h| cfg[:heathen_host] = h }
+  opts.on( '-O', '--heathen-port PORT', Integer, 'Heathen server port' ) { |p| cfg[:heathen_port] = p }
+  opts.on( '-C', '--config FILE', 'Configuration YAML file' ) { |file| f = YAML::load_file(file); cfg.merge! f }
+  opts.on( '-v', '--verbose', 'Running commentary' ) { cfg[:verbose] = true }
+end.parse!
+
+AutoHeathen::Processor.new(cfg).process_io $stdin
