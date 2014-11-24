@@ -30,7 +30,7 @@ OptionParser.new do |opts|
   opts.on( '-t', '--to EMAIL', 'Converted files will be emailed to this address' ) { |e| cfg[:mode] = :email; cfg[:email] = e }
   opts.on( '-e', '--directory DIR', 'Converted files will be stored in this directory' ) { |d| cfg[:mode] = :directory; cfg[:directory] = d }
   opts.on( '-s', '--summary', 'Don\'t deposit the converted file, just log a summary' ) { cfg[:mode] = :summary }
-  opts.on( '-o', '--operation OPERATION', ['ocr','pdf','doc'], 'Conversion operation to request from Heathen' ) { |o| cfg[:operation] = o }
+  opts.on( '-o', '--operation OPERATION', ['ocr','pdf','doc'], 'Conversion operation to request from Heathen, optional (will be interpolated if omitted)' ) { |o| cfg[:operation] = o }
   opts.on( '-M', '--mail-host MAILHOST', 'Mail server for sending replies' ) { |h| cfg[:mail_host] = h }
   opts.on( '-P', '--mail-port PORT', Integer, 'Mail server port' ) { |p| cfg[:mail_port] = p }
   opts.on( '-H', '--heathen-host HOST', 'Heathen server name' ) { |h| cfg[:heathen_host] = h }

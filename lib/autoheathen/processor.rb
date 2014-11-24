@@ -11,7 +11,8 @@ module AutoHeathen
     # Constructs the processor
     # @param cfg a hash of configuration settings:
     #    mode:             :summary                       Processing mode, one of :summary, :directory, :return_to_sender, :email
-    #    operation:        'ocr'                          Conversion operation, one of 'ocr', 'pdf', 'doc'
+    #    operation:        'ocr'                          Force conversion operation, one of 'ocr', 'pdf', 'doc'
+    #                                                     will be auto-determined if not specified
     #    language:         'en'                           Language the document is in
     #    email:            nil                            Email to send response to (if mode == :email)
     #    from:             'autoheathen'                  Who to say the email is from
@@ -28,7 +29,7 @@ module AutoHeathen
     def initialize cfg={}
       @cfg = {   # defaults
         mode:             :summary,
-        operation:        'ocr',
+        operation:        nil,
         language:         'en',
         email:            nil,
         from:             'autoheathen',
@@ -53,23 +54,26 @@ module AutoHeathen
 
     # Returns true if the given content type is valid for processing
     # @param content_type e.g. "image/jpeg"
-    def valid_content_type? content_type
+    def get_operation content_type
       # We could take this from Inquisitor#can_convert?, and Encoders.can_encode?, but I'm not 
       # too keen to drag them into this script. Instead, just choose from a restricted set of
       # content types.
       ct = content_type.gsub(/;.*/, '')
-      [
-	'application/pdf',
-	'text/html',
-	'application/zip',
-	'application/msword',
-	'application/vnd.oasis.opendocument.text',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.ms-powerpoint',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-      ].include?(ct) || ct.start_with?('image/')
+      op = {
+	'application/pdf' => 'ocr',
+	'text/html' => 'doc',
+	'application/zip' => 'doc',
+	'application/msword' => 'doc',
+	'application/vnd.oasis.opendocument.text' => 'doc',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'doc',
+        'application/vnd.ms-excel' => 'doc',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'doc',
+        'application/vnd.ms-powerpoint' => 'doc',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'doc',
+      }[ct]
+      op = 'ocr' if ! op && ct.start_with?('image/')
+      raise "Conversion from #{ct} is not supported" unless op
+      op
     end
 
     # Processes the given email, submits attachments to the Heathen server, delivers responses as configured
@@ -102,16 +106,16 @@ module AutoHeathen
       # Submit the attachments to heathen
       #
       email.attachments.each do |attachment|
-        next unless valid_content_type? attachment.content_type
-        logger.debug "Sending conversion request for #{attachment.filename} to Heathen"
-        opts = {
-          language: @cfg[:language],
-          file: AttachmentIO.new(attachment),
-          original_filename: attachment.filename,
-          multipart: true,
-        }
         begin
-          heathen_client.convert(@cfg[:operation],opts).get do |data|
+          op = cfg[:operation] ? cfg[:operation] : get_operation(attachment.content_type)
+          logger.debug "Sending '#{op}' conversion request for #{attachment.filename} to Heathen"
+          opts = {
+            language: @cfg[:language],
+            file: AttachmentIO.new(attachment),
+            original_filename: attachment.filename,
+            multipart: true,
+          }
+          heathen_client.convert(op,opts).get do |data|
             filename = attachment.filename
             filename = File.basename(filename,File.extname(filename)) + '.pdf'
             logger.debug "Conversion received: #{filename}"
@@ -164,13 +168,25 @@ module AutoHeathen
     # Send documents to email
     def deliver_email email, documents
       send_to = @cfg[:mode] == :return_to_sender ? email.from : @cfg[:email]
+      cc_list = email.cc && email.cc.size > 0 ? email.cc : nil
       logger.debug "Sending response mail to #{send_to}"
       cfg = @cfg # stoopid Mail scoping
       me = self # stoopid stoopid
       mail = Mail.new do
         from      cfg[:from]
         to        send_to
-        subject   "Re: #{email.subject}"
+        if cc_list
+          # CCs to the original email will get a copy of the converted files as well
+          cc      cc_list
+        end
+        # Don't prepend yet another Re:
+        subject   "#{'Re: ' unless email.subject.start_with? 'Re:'}#{email.subject}"
+        # Construct received path
+        # TODO: is this in the right order?
+        rcv = "by localhost(autoheathen); #{Time.now.strftime '%a, %d %b %Y %T %z'}"
+        [rcv,email.received].flatten.each { |rec| received rec.to_s }
+        return_path email.return_path if email.return_path
+        header['X-Received'] = email.header['X-Received'] if email.header['X-Received']
         documents.each do |doc|
           next if doc[:content].nil?
           add_file filename: doc[:filename], content: doc[:content]
