@@ -17,6 +17,7 @@ gem 'iconv'
 gem 'mail'
 gem 'haml'
 gem 'heathen-client'
+gem 'ruby-filemagic'
 
 group :staging, :production do
   gem 'unicorn'

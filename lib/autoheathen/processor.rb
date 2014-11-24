@@ -3,6 +3,8 @@ require 'heathen-client'
 require 'yaml'
 require 'logger'
 require 'haml'
+require 'filemagic'
+require 'filemagic/ext'
 
 module AutoHeathen
   class Processor
@@ -100,6 +102,11 @@ module AutoHeathen
     def process email
       documents = []
 
+      unless email.has_attachments?
+        logger.info "From: #{email.from} Subject: (#{email.subject}) Files: no attachments"
+        return
+      end
+
       logger.info "From: #{email.from} Subject: (#{email.subject}) Files: #{email.attachments.map(&:filename).join(',')}"
 
       #
@@ -107,8 +114,12 @@ module AutoHeathen
       #
       email.attachments.each do |attachment|
         begin
-          op = cfg[:operation] ? cfg[:operation] : get_operation(attachment.content_type)
-          logger.debug "Sending '#{op}' conversion request for #{attachment.filename} to Heathen"
+          # icky - decode the whole body just to read the first few bytes
+          # double-icky - use FileMagic's extension to String
+          content_type = attachment.body.decoded.mime_type
+
+          op = cfg[:operation] ? cfg[:operation] : get_operation(content_type)
+          logger.debug "Sending '#{op}' conversion request for #{attachment.filename} to Heathen, content-type: #{content_type}"
           opts = {
             language: @cfg[:language],
             file: AttachmentIO.new(attachment),
@@ -169,7 +180,7 @@ module AutoHeathen
     def deliver_email email, documents
       send_to = @cfg[:mode] == :return_to_sender ? email.from : @cfg[:email]
       cc_list = email.cc && email.cc.size > 0 ? email.cc : nil
-      logger.debug "Sending response mail to #{send_to}"
+      logger.info "Sending response mail to #{send_to}"
       cfg = @cfg # stoopid Mail scoping
       me = self # stoopid stoopid
       mail = Mail.new do

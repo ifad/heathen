@@ -1,1 +1,1 @@
-|"(cd /home/jblackman/src/autoheathen; /home/jblackman/.rbenv/bin/rbenv exec bundle exec bin/heathen_mailstream -r >> log/autoheathen.log 2>&1)"
+|"(cd /home/jblackman/src/heathen; /home/jblackman/.rbenv/bin/rbenv exec bundle exec bin/autoheathen -r >> log/autoheathen.log 2>&1)"

@@ -3,18 +3,8 @@ require 'autoheathen/processor'
 
 describe AutoHeathen::Processor do
   before :all do
-    @email = Mail.new do
-      from 'mrblobby'
-      to 'autoheathen'
-      cc [ 'mrgrumpy', 'marypoppins' ]
-      subject 'Fwd: Convert: please'
-      return_path 'mrwoosy'
-      header['X-Received'] = 'misssilly'
-      received 'by 10.141.116.17 with SMTP id t17mr3929916rvm.251.1214951458741; Tue, 25 Jan 2011 15:30:58 -0700 (PDT)'
-      received 'by 10.140.188.3 with HTTP; Tue, 25 Jan 2011 15:30:58 -0700 (PDT)'
-      add_file (support_path + 'test1.doc').to_s
-      add_file (support_path + 'poem1.jpg').to_s
-    end
+    @email = Mail.read( support_path + 'test2.mail' )
+    @email.header['X-Received'] = 'misssilly'
     @email_to_s = @email.to_s
   end
   before :each do
@@ -59,14 +49,14 @@ describe AutoHeathen::Processor do
   it 'processes content' do
     p = AutoHeathen::Processor.new @cfg.merge( { mode: :summary } )
     allow(p).to receive(:heathen_client).and_return(@hc_mock)
-    expect(@hc_mock).to receive(:convert) do |operation,opts|
-      expect(operation).to eq 'doc'
-      expect(opts[:language]).to eq 'en'
-      expect(opts[:file]).to be_a AutoHeathen::AttachmentIO
-      expect(opts[:original_filename]).to eq 'test1.doc'
-      expect(opts[:multipart]).to be true
-      raise_error "Not good"
-   end
+#    expect(@hc_mock).to receive(:convert) do |operation,opts|
+#      expect(operation).to eq 'doc'
+#      expect(opts[:language]).to eq 'en'
+#      expect(opts[:file]).to be_a AutoHeathen::AttachmentIO
+#      expect(opts[:original_filename]).to eq 'test1.doc'
+#      expect(opts[:multipart]).to be true
+#      raise_error "Not good"
+#   end
     expect(@hc_mock).to receive(:convert) do |operation,opts|
       expect(operation).to eq 'ocr'
       expect(opts[:language]).to eq 'en'
@@ -82,7 +72,7 @@ describe AutoHeathen::Processor do
   it 'processes email as string' do
     p = AutoHeathen::Processor.new @cfg.merge( { mode: :summary } )
     allow(p).to receive(:heathen_client).and_return(@hc_mock)
-    expect(@hc_mock).to receive(:convert).with( String, Hash ).and_raise("Not good")
+    #expect(@hc_mock).to receive(:convert).with( String, Hash ).and_raise("Not good")
     expect(@hc_mock).to receive(:convert).with( String, Hash ).and_return(@hc_mock)
     expect(@hc_mock).to receive(:get).and_yield(@poem_sample)
     p.process_string @email_to_s
@@ -95,7 +85,7 @@ describe AutoHeathen::Processor do
       tmpfile.close
       p = AutoHeathen::Processor.new @cfg.merge( { mode: :summary } )
       allow(p).to receive(:heathen_client).and_return(@hc_mock)
-      expect(@hc_mock).to receive(:convert).with( String, Hash ).and_raise("Not good")
+      #expect(@hc_mock).to receive(:convert).with( String, Hash ).and_raise("Not good")
       expect(@hc_mock).to receive(:convert).with( String, Hash ).and_return(@hc_mock)
       expect(@hc_mock).to receive(:get).and_yield(@poem_sample)
       p.process_file tmpfile.path
@@ -113,7 +103,7 @@ describe AutoHeathen::Processor do
       p = AutoHeathen::Processor.new @cfg
       io = File.open tmpfile
       allow(p).to receive(:heathen_client).and_return(@hc_mock)
-      expect(@hc_mock).to receive(:convert).with(String, Hash).and_raise("Not good")
+      #expect(@hc_mock).to receive(:convert).with(String, Hash).and_raise("Not good")
       expect(@hc_mock).to receive(:convert).with(String, Hash).and_return(@hc_mock)
       expect(@hc_mock).to receive(:get).and_yield(@poem_sample)
       p.process_io io
@@ -129,7 +119,7 @@ describe AutoHeathen::Processor do
       Dir.mkdir dir
       p = AutoHeathen::Processor.new @cfg.merge( { mode: :directory, directory: dir } )
       allow(p).to receive(:heathen_client).and_return(@hc_mock)
-      expect(@hc_mock).to receive(:convert).with(String, Hash).and_raise("Not good")
+      #expect(@hc_mock).to receive(:convert).with(String, Hash).and_raise("Not good")
       expect(@hc_mock).to receive(:convert).with(String, Hash).and_return(@hc_mock)
       expect(@hc_mock).to receive(:get).and_yield(@poem_sample)
       p.process @email
@@ -141,9 +131,11 @@ describe AutoHeathen::Processor do
 
   it 'delivers to email' do
     @mail_mock = class_double(Mail)
+    @email.subject 'Fwd: Convert: please'
+    @email.cc ['mrgrumpy','marypoppins']
     allow(@mail_mock).to receive(:new).and_return @mail_mock
     p = AutoHeathen::Processor.new @cfg.merge( { mode: :email, email: 'mrfishy' } )
-    expect(@hc_mock).to receive(:convert).with(String, Hash).and_raise("Not good")
+    #expect(@hc_mock).to receive(:convert).with(String, Hash).and_raise("Not good")
     expect(@hc_mock).to receive(:convert).with(String, Hash).and_return(@hc_mock)
     expect(@hc_mock).to receive(:get).and_yield(@poem_sample)
     expect(p).to receive(:deliver) do |mail|
@@ -157,8 +149,8 @@ describe AutoHeathen::Processor do
       expect(mail.delivery_method.settings[:address]).to eq 'localhost'
       expect(mail.cc).to eq [ 'mrgrumpy', 'marypoppins' ]
       expect(mail.received).to be_a Array
-      expect(mail.received.size).to eq 3
-      expect(mail.return_path).to eq 'mrwoosy'
+      expect(mail.received.size).to eq 2
+      expect(mail.return_path).to eq 'jblackman@debian.localdomain'
       expect(mail.header['X-Received'].to_s).to eq 'misssilly'
     end
     p.process @email
@@ -168,7 +160,7 @@ describe AutoHeathen::Processor do
     @mail_mock = class_double(Mail)
     allow(@mail_mock).to receive(:new).and_return @mail_mock
     p = AutoHeathen::Processor.new @cfg.merge( { mode: :return_to_sender } )
-    expect(@hc_mock).to receive(:convert).with(String, Hash).and_raise("Not good")
+    #expect(@hc_mock).to receive(:convert).with(String, Hash).and_raise("Not good")
     expect(@hc_mock).to receive(:convert).with(String, Hash).and_return(@hc_mock)
     expect(@hc_mock).to receive(:get).and_yield(@poem_sample)
     # extra test - that we don't prepend 'Re:' if it already exists
