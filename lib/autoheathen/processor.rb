@@ -37,9 +37,7 @@ module AutoHeathen
         from:             `/usr/bin/whoami`,
         directory:        nil,
         verbose:          false,
-        heathen_scheme:   'http', # or https
-        heathen_host:     'localhost',
-        heathen_port:     9292,
+        heathen_base_uri: 'http://localhost:9292',
         mail_host:        'localhost',
         mail_port:        25,
         logger:           nil,
@@ -225,8 +223,7 @@ module AutoHeathen
 
     # Convenience constructor for heathen client
     def heathen_client
-      base_uri = "#{@cfg[:heathen_scheme]}://#{@cfg[:heathen_host]}:#{@cfg[:heathen_port]}"
-      Heathen::Client.new base_uri: base_uri
+      Heathen::Client.new base_uri: @cfg[:heathen_base_uri]
     end
 
     # Convenience method to return logger
