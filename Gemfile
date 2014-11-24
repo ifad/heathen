@@ -13,6 +13,7 @@ gem 'rake',               '~> 10.0.3'
 gem 'hpricot',            '~> 0.8.6'
 gem 'rmagick',            '~> 2.13.2'
 gem 'iconv'
+gem 'mail'
 
 group :staging, :production do
   gem 'unicorn'

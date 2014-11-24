@@ -32,7 +32,7 @@ module AutoHeathen
         operation:        nil,
         language:         'en',
         email:            nil,
-        from:             'autoheathen',
+        from:             `/usr/bin/whoami`,
         directory:        nil,
         verbose:          false,
         heathen_scheme:   'http', # or https
