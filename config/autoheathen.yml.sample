@@ -1,0 +1,8 @@
+language: 'en'
+email: 'LEG_wikilex@xdesk.ifad.org'
+verbose: false
+operation: 'ocr'
+text_template: 'config/autoheathen.text.haml'
+html_template: 'config/autoheathen.html.haml'
+mail_host: 'localhost'
+mail_port: 25
