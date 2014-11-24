@@ -31,6 +31,9 @@ GEM
     hpricot (0.8.6)
     iconv (1.0.4)
     kgio (2.7.4)
+    mail (2.6.3)
+      mime-types (>= 1.16, < 3)
+    mime-types (2.4.3)
     multi_json (1.6.1)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
@@ -91,6 +94,7 @@ DEPENDENCIES
   dragonfly (~> 0.9.12)
   hpricot (~> 0.8.6)
   iconv
+  mail
   pdfbeads (~> 1.0.9)
   pdfkit (~> 0.5.2)
   rack-cache (~> 1.2)
