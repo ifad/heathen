@@ -1,4 +1,5 @@
 language: 'en'
+from: 'autoheathen'
 email: 'LEG_wikilex@xdesk.ifad.org'
 verbose: false
 operation: 'ocr'

@@ -19,7 +19,7 @@ OptionParser.new do |opts|
   opts.on( '-m', '--mode MODE', ['dir','rts','email','summary'], 'Output mode of streamer' ) do |mode|
     case mode
       when 'dir'
-        mkdir 'foo'
+        Dir.mkdir 'foo'
         outmode = '-d foo'
       when 'rts'
         outmode = '-r'
