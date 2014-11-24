@@ -1,4 +1,6 @@
 #!/usr/bin/env rake
+require 'rspec/core'
+require 'rspec/core/rake_task'
 
 ENV['RACK_ENV']               ||= "development"
 ENV['HEATHEN_STORAGE_ROOT']   ||= File.expand_path('../storage', __FILE__)
@@ -39,3 +41,7 @@ namespace :heathen do
   end
 end
 
+RSpec::Core::RakeTask.new(:spec) do |spec|
+  spec.pattern = FileList['spec/**/*_spec.rb']
+end
+task test: :spec

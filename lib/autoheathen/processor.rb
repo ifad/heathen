@@ -6,6 +6,8 @@ require 'haml'
 
 module AutoHeathen
   class Processor
+    attr_reader :cfg
+
     # Constructs the processor
     # @param cfg a hash of configuration settings:
     #    mode:             :summary                       Processing mode, one of :summary, :directory, :return_to_sender, :email
@@ -38,11 +40,11 @@ module AutoHeathen
         mail_host:        'localhost',
         mail_port:        25,
         logger:           nil,
-        text_template:    'config/response.text.haml',
-        html_template:    'config/response.html.haml',
+        text_template:    'config/autoheathen.text.haml',
+        html_template:    'config/autoheathen.html.haml',
       }
       if cfg[:config_file] && File.exist?(cfg[:config_file])
-        @cfg.merge! YAML::load_file cfg[:config_file]
+        @cfg.merge! symbolize_keys(YAML::load_file cfg[:config_file])
       end
       @cfg.merge! cfg  # non-file opts have precedence
       @logger = @cfg[:logger] || Logger.new(STDOUT)
@@ -52,33 +54,49 @@ module AutoHeathen
     # Returns true if the given content type is valid for processing
     # @param content_type e.g. "image/jpeg"
     def valid_content_type? content_type
-      # TODO
-      #[ 'application/docx' ].include? content_type
-      true
+      # We could take this from Inquisitor#can_convert?, and Encoders.can_encode?, but I'm not 
+      # too keen to drag them into this script. Instead, just choose from a restricted set of
+      # content types.
+      ct = content_type.gsub(/;.*/, '')
+      [
+	'application/pdf',
+	'text/html',
+	'application/zip',
+	'application/msword',
+	'application/vnd.oasis.opendocument.text',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      ].include?(ct) || ct.start_with?('image/')
     end
 
     # Processes the given email, submits attachments to the Heathen server, delivers responses as configured
     # @param file The name of a file containing the email
     # @return nothing important
     def process_file file
-      process File.read(file)
+      process_string File.read(file)
     end
 
     # Processes the given email, submits attachments to the Heathen server, delivers responses as configured
     # @param io An IO object, from which will be read the email
     # @return nothing important
     def process_io io
-      process io.read
+      process_string io.read
+    end
+
+    def process_string email_string
+      process Mail.read_from_string(email_string)
     end
 
     # Processes the given email, submits attachments to the Heathen server, delivers responses as configured
     # @param input A string containing the encoded email (suitable to be decoded using Mail.read(input)
     # @return nothing important
-    def process input
-      email = Mail.read_from_string input
+    def process email
       documents = []
 
-      logger.info "From: #{email.from[0]} Subject: (#{email.subject}) Files: #{email.attachments.map(&:filename).join(',')}"
+      logger.info "From: #{email.from} Subject: (#{email.subject}) Files: #{email.attachments.map(&:filename).join(',')}"
 
       #
       # Submit the attachments to heathen
@@ -110,7 +128,7 @@ module AutoHeathen
       case @cfg[:mode]
         when :directory
           deliver_directory email, documents
-        when :email
+        when :email, :return_to_sender
           deliver_email email, documents
       end
 
@@ -145,7 +163,7 @@ module AutoHeathen
 
     # Send documents to email
     def deliver_email email, documents
-      send_to = @cfg[:email] == :return_to_sender ? email.from : @cfg[:email]
+      send_to = @cfg[:mode] == :return_to_sender ? email.from : @cfg[:email]
       logger.debug "Sending response mail to #{send_to}"
       cfg = @cfg # stoopid Mail scoping
       me = self # stoopid stoopid
@@ -168,9 +186,14 @@ module AutoHeathen
         end
       end
       mail.delivery_method :smtp, address: @cfg[:mail_host], port: @cfg[:mail_port]
-      mail.deliver!
+      deliver mail
 
       logger.debug "Files were emailed to #{send_to}"
+    end
+
+    # Convenience method allowing us to stub out actual mail delivery in RSpec
+    def deliver mail
+      mail.deliver!
     end
 
     # Convenience constructor for heathen client
@@ -179,16 +202,27 @@ module AutoHeathen
       Heathen::Client.new base_uri: base_uri
     end
 
+    # Convenience method to return logger
     def logger
       @logger
     end
 
+    # Opens and reads a file, first given the filename, then tries from the project base directory
     def read_file filename
       f = filename
       unless File.exist? f
-        f = Pathname.new(__FILE__).realpath.parent.parent + f
+        f = Pathname.new(__FILE__).realpath.parent.parent.parent + f
       end
       File.read f
+    end
+
+    def symbolize_keys(hash)
+      hash.inject({}){|result, (key, value)|
+        new_key = key.is_a?(String) ? key.to_sym : key
+        new_value = value.is_a?(Hash) ? symbolize_keys(value) : value
+        result[new_key] = new_value
+        result
+      }
     end
   end
 

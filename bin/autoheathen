@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Script:      heathen_mailstream
+# Script:      autoheathen
 # Description: This script takes an encoded mail message from standard input and forwards
 #              any attachments of the allowed MIME types to a Heathen server for translation.
 #
@@ -21,7 +21,7 @@
 require 'optparse'
 require 'pathname'
 $: << Pathname.new(__FILE__).realpath.parent.parent + 'lib'
-require 'processor'
+require 'autoheathen/processor'
 
 cfg = {}
 

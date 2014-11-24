@@ -22,6 +22,7 @@ group :development do
   gem 'capistrano',         '~> 2.13.5'
   gem 'capistrano-ext',     '~> 1.2.1'
   gem 'airbrake',           '~> 3.1.6'
+  gem 'rspec'
 end
 
 platform :ruby do
