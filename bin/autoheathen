@@ -35,7 +35,7 @@ OptionParser.new do |opts|
   opts.on( '-P', '--mail-port PORT', Integer, 'Mail server port' ) { |p| cfg[:mail_port] = p }
   opts.on( '-H', '--heathen-host HOST', 'Heathen server name' ) { |h| cfg[:heathen_host] = h }
   opts.on( '-O', '--heathen-port PORT', Integer, 'Heathen server port' ) { |p| cfg[:heathen_port] = p }
-  opts.on( '-C', '--config FILE', 'Configuration YAML file' ) { |file| f = YAML::load_file(file); cfg.merge! f }
+  opts.on( '-C', '--config FILE', 'Configuration YAML file' ) { |file| cfg[:config_file] = file }
   opts.on( '-v', '--verbose', 'Running commentary' ) { cfg[:verbose] = true }
 end.parse!
 

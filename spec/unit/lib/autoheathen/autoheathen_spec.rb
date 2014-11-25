@@ -36,6 +36,7 @@ describe AutoHeathen::Processor do
     expect(p.logger.debug?).to be false
     expect(p.cfg[:operation]).to be nil
     expect(p.cfg[:from]).to eq 'noreply@ifad.org' # from config file
+    expect(p.cfg[:heathen_base_uri]).to eq 'http://localhost:10000' # from config file
   end
 
   it 'validates content types' do
