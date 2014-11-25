@@ -1,8 +1,8 @@
 language: 'en'
-from: 'autoheathen'
-email: 'LEG_wikilex@xdesk.ifad.org'
+from: 'get.pdf@ifad.org'
+#email: 'LEG_wikilex@xdesk.ifad.org'
+email: 'a.paglione@ifad.org'
 verbose: false
-operation: 'ocr'
 text_template: 'config/autoheathen.text.haml'
 html_template: 'config/autoheathen.html.haml'
 mail_host: 'localhost'
