@@ -1,7 +1,61 @@
-%p You submitted a document conversion request. Here are the results:
-%br
-  - documents.each do |doc|
-    - if doc[:content].nil?
-      %p #{doc[:orig_filename]} was not converted (#{doc[:error]})
-    - else
-      %p #{doc[:orig_filename]} was converted successfully
+:css
+  .all {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    line-height: 20px;
+  }
+  .logo {
+    background-color: #1b1b1b;
+    height: 44px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+  }
+  .nav-container {
+    padding-top: 10px;
+    padding-left: 20px;
+  }
+  i.logo-image {
+    background: url('https://webapps.ifad.org/heathen/assets/logo.png') no-repeat center center black;
+    float: left;
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+    display: block;
+  }
+  .title {
+    font-size: 20px;
+    color: #777;
+    vertical-align: middle;
+    margin-left 10px;
+  }
+  li {
+    list-style-type: none;
+    padding-left: 20px;
+  }
+  .em {
+    font-weight: bold;
+  }
+%div.all
+  %div.logo
+    %div.nav-container
+      %i.logo-image
+      %span.title IFAD | Document Converter
+  %div
+    %p
+      Dear customer:
+    %p
+      Please find attached the results of the conversion request sent to the automated document conversion service.
+    %ul
+    - documents.each do |doc|
+      %li
+        %span.em= doc[:orig_filename]
+        - if doc[:content].nil?
+          &nbsp;was not converted (#{doc[:error]})
+        - else
+          &nbsp;was converted successfully
+    %p
+    Regards,
+    %br
+    %span Document converter

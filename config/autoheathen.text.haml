@@ -1,8 +1,14 @@
 :plain
-  You submitted a document conversion request. Here are the results:
-
+  Dear customer:
+  
+  Please find attached the results of the conversion request sent to the automated document conversion service.
+  
 - documents.each do |doc|
   - if doc[:content].nil?
     #{doc[:orig_filename]} was not converted (#{doc[:error]})
   - else
     #{doc[:orig_filename]} was converted successfully
+:plain
+  
+  Regards,
+  Document converter
