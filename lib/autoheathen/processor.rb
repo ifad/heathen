@@ -124,11 +124,16 @@ module AutoHeathen
             original_filename: attachment.filename,
             multipart: true,
           }
-          heathen_client.convert(op,opts).get do |data|
-            filename = attachment.filename
-            filename = File.basename(filename,File.extname(filename)) + '.pdf'
-            logger.debug "Conversion received: #{filename}"
-            documents << { orig_filename: attachment.filename, filename: filename, content: data, error: false }
+          resp = heathen_client.convert(op,opts)
+          if resp.error?
+            documents << { orig_filename: attachment.filename, filename: nil, content: nil, error: resp.error }
+          else
+            resp.get do |data|
+              filename = attachment.filename
+              filename = File.basename(filename,File.extname(filename)) + '.pdf'
+              logger.debug "Conversion received: #{filename}"
+              documents << { orig_filename: attachment.filename, filename: filename, content: data, error: false }
+            end
           end
         rescue StandardError => e
           documents << { orig_filename: attachment.filename, filename: nil, content: nil, error: e.message }

@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby
+#
+# Script:      cvheathen
+# Description: This script will walk a directory, looking for files to convert, send them to Heathen
+#              and store the results in a second directory, with the same tree structure.
+#
+# Usage:       cvheathen -i DIR -o DIR {opts}
+#
+# Options:     -i      directory to read files from
+#              -o      directory to write converted file to
+#
+#
+require 'optparse'
+require 'pathname'
+$: << Pathname.new(__FILE__).realpath.parent.parent + 'lib'
+require 'autoheathen/standalone'
+
+cfg = { 
+  overwrite: false,
+}
+
+OptionParser.new do |opts|
+  opts.on( '-i', '--input-directory DIR', 'Directory to read from' ) { |i| cfg[:in_dir] = i }
+  opts.on( '-o', '--output-directory DIR', 'Converted files will be stored in this directory' ) { |d| cfg[:out_dir] = d }
+  opts.on( '-f', '--force', 'Overwrite existing converted file - default is to skip it' ) { cfg[:overwrite] = true }
+  opts.on( '-H', '--heathen-base-uri URI', 'Base URI for heathen' ) { |h| cfg[:heathen_base_uri] = h }
+  opts.on( '-C', '--config FILE', 'Configuration YAML file' ) { |file| cfg[:config_file] = file }
+  opts.on( '-v', '--verbose', 'Running commentary' ) { cfg[:verbose] = true }
+  opts.on( '-h', '--help', 'This message' ) { puts opts; exit }
+end.parse!
+
+processor = AutoHeathen::Standalone.new cfg
+
+Dir.glob( "#{cfg[:in_dir]}/**/*" ).each do |file|
+  next if File.directory? file
+  begin
+    dir_part = File.dirname( file.gsub "#{cfg[:in_dir]}/", "")
+    outfile = "#{cfg[:out_dir]}/#{dir_part}/#{processor.converted_filename file}"
+    if File.exist?(outfile) && cfg[:overwrite] == false
+      puts "#{file} -> skipped (already exists)"
+    else
+      start_time = Time.now
+      processor.process File.read(file), File.basename(file) do |content,new_filename|
+        outfile = "#{cfg[:out_dir]}/#{dir_part}/#{new_filename}"
+        outdir = File.dirname outfile
+        FileUtils.mkdir_p outdir unless File.exist? outdir
+        File.open outfile, 'wb' do |f|
+          f.write content
+        end
+        puts "#{file} -> #{outfile} %0.2f s"%[Time.now-start_time]
+      end
+    end
+  rescue StandardError => e
+    puts "#{file} -- failed: #{e.message}"
+  end
+end

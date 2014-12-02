@@ -86,7 +86,13 @@ module Heathen
         json_response({
              error: "Unable to convert",
             action: e.action,
-              name: e.temp_object.name
+              name: e.temp_object.name,
+        }, 400)
+      rescue StandardError => e
+        json_response({
+             error: "Error encountered whilst converting",
+            action: 'unknown',
+              name: 'unknown' ,
         }, 500)
       end
     end

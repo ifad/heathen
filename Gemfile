@@ -18,6 +18,8 @@ gem 'mail'
 gem 'haml'
 gem 'heathen-client'
 gem 'ruby-filemagic'
+gem 'net_dav'
+gem 'curb'
 
 group :staging, :production do
   gem 'unicorn'
