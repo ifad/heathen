@@ -4,6 +4,9 @@
 # Description: This script will walk a directory, looking for files to convert, send them to Heathen
 #              and store the results in a second directory, with the same tree structure.
 #
+#              Email files (.msg and .eml) will have their attachments converted and saved back inside the
+#              email (in the new directory), in .eml form.
+#
 # Usage:       cvheathen -i DIR -o DIR {opts}
 #
 # Options:     -i      directory to read files from
