@@ -44,7 +44,7 @@ end
 # does not exist, creates it.
 def to_outfile in_dir, orig_filename, out_dir, new_filename
   dir_part = File.dirname( orig_filename.gsub "#{in_dir}/", "")
-  outdir = Pathname.new(out_dir) + File.dirname(dir_part)
+  outdir = Pathname.new(out_dir) + dir_part
   FileUtils.mkdir_p outdir unless File.exist? outdir
   outfile = outdir + File.basename(new_filename)
   outfile
