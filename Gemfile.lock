@@ -1,9 +1,4 @@
 GIT
-  remote: git://github.com/ifad/jruby-debug.git
-  revision: c6cc915d75c7942742257a80c0caf5f855ee1030
-  specs:
-
-GIT
   remote: git://github.com/ifad/pdfbeads.git
   revision: 7f81be26eced36b12fa2cd6795c57ab4c9230eae
   specs:
