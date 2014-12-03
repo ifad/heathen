@@ -15,16 +15,17 @@ require 'pathname'
 $: << Pathname.new(__FILE__).realpath.parent.parent
 $: << Pathname.new(__FILE__).realpath.parent.parent + 'lib'
 require 'autoheathen'
+require 'mail'
 
 in_dir = nil
 out_dir = nil
-logger = Logger.new(nil)
+$logger = Logger.new(nil)
 language = 'en'
 
 OptionParser.new do |opts|
   opts.on( '-i', '--input-directory DIR', 'Directory to read from' ) { |i| in_dir = i }
   opts.on( '-o', '--output-directory DIR', 'Converted files will be stored in this directory' ) { |d| out_dir = d }
-  opts.on( '-v', '--verbose', 'Running commentary' ) { logger = Logger.new(STDOUT) }
+  opts.on( '-v', '--verbose', 'Running commentary' ) { $logger = Logger.new(STDOUT) }
   opts.on( '-l', '--language LANGUAGE', 'The language of the input files (currently only "en" and "es" allowed)' ) { |l| language = l }
   opts.on( '-h', '--help', 'This message' ) { puts opts; exit }
 end.parse!
@@ -32,30 +33,82 @@ end.parse!
 abort "Please specify an input directory" unless in_dir
 abort "Please specify an output directory" unless out_dir
 
-converter = AutoHeathen::Converter.new( { logger: logger } )
+def logger
+  $logger
+end
 
-Dir.glob( "#{in_dir}/**/*" ).each do |file|
-  next if File.directory? file
-
-  # Construct the output directory
-  dir_part = File.dirname( file.gsub "#{in_dir}/", "")
+# Constructs a destination file name from the given parameters. If the destination directory
+# does not exist, creates it.
+def to_outfile in_dir, orig_filename, out_dir, new_filename
+  dir_part = File.dirname( orig_filename.gsub "#{in_dir}/", "")
   outdir = Pathname.new(out_dir) + File.dirname(dir_part)
   FileUtils.mkdir_p outdir unless File.exist? outdir
+  outfile = outdir + File.basename(new_filename)
+  outfile
+end
 
+# Converts .msg file to .eml structure
+def convert_msg filename, in_dir, out_dir
+  new_filename = to_outfile in_dir, filename, out_dir, filename.gsub( /.msg$/, '.eml' )
+  rv = Heathen::Executioner.new(logger).execute( "#{File.dirname __FILE__}/msgconvert.pl", filename, new_filename )
+  raise "Cannot run msgconvert.pl (see README.md for installation instructions" if rv != 0
+  raise "Failed to convert #{filename} to .eml" unless File.exist? new_filename
+  new_filename
+end
+
+# Converts a given file. Note that the file has already been read
+# thus allowing us to convert and save a mail attachment
+def convert_file filename, content, in_dir, out_dir, language
+  # Convert the file
+  converter = AutoHeathen::Converter.new( { logger: logger } )
+  action = converter.get_action content.content_type
+  logger.debug "  convert: #{File.basename(filename)}, content_type: #{content.content_type}, action: #{action}"
+  start_time = Time.now
+  outfile, data = converter.convert action, language, filename, content
+  logger.debug "  conversion took %0.2f s"%[Time.now-start_time]
+
+  # Save the file
+  outfile = to_outfile in_dir, filename, out_dir, outfile
+  logger.info "  writing file: #{outfile}"
+  File.open outfile, "w" do |f|
+    f.write data
+  end
+end
+
+#
+# Find all files and convert them
+#
+Dir.glob( "#{in_dir}/**/*" ).each do |file|
+  next if File.directory? file
   logger.info "Processing: #{file}"
 
   begin
-    content = File.read(file)
-    action = converter.get_action content.content_type
-    logger.debug "  content_type: #{content.content_type}, action: #{action}"
-    start_time = Time.now
-    outfile, data = converter.convert action, language, file, content
-    outfile = outdir + File.basename(outfile)
-    logger.info " writing file: #{outfile}"
-    File.open outfile, "w" do |f|
-      f.write data
+    if [ '.msg', '.eml' ].include? File.extname(file)
+      # Emails are a special case - we need read the email, convert attachments and save them along with the email text
+      # converted attachments will be saved as {email filename}.{attachment filename}, e.g. given this file:
+      #    B877.msg (with attachments foo.jpg, bar.docx)
+      # we would end up with these files saved:
+      #    B877.foo.pdf, B877.bar.pdf B877.eml
+      # The .eml file is the email with attachments stripped out. This is done because we don't think Sharepoint can index
+      # email attachments (which is the point of this script).
+      email = Mail.read( File.extname(file)=='.msg' ? convert_msg(file, in_dir, out_dir) : file )
+      f_base = file.gsub /#{File.extname(file)}$/, ''
+      logger.debug "  email file, has #{email.attachments.size} attachments"
+      email.attachments.each do |attachment|
+        a_filename = "#{f_base}.#{attachment.filename}"
+        convert_file a_filename, attachment.decoded, in_dir, out_dir, language
+      end
+      email.without_attachments!
+      email.charset = 'utf-8' unless email.charset # stop annoying warning message if charset not defined in email
+      e_filename = to_outfile in_dir, file, out_dir, "#{f_base}.eml"
+      logger.debug "  writing #{e_filename} without attachments"
+      File.open( e_filename, 'wb' ) do |f|
+        f.write email.to_s
+      end
+    else
+      content = File.read(file)
+      convert_file file, content, in_dir, out_dir, language
     end
-    logger.debug " completed in %0.2f s"%[Time.now-start_time]
   rescue StandardError => e
     logger.warn "  failed: #{e.message}"
   end
