@@ -127,7 +127,7 @@ As an example for configuration, here is how we did it with postfix:
 Edit autoheathen.yml to suit the location of your heathen app (possibly via a reverse proxy like nginx if the unicorns are listening on a domain socket rather than TCP/IP).
 
 ## CVHeathen
-This is a utility to convert a directory full of files. The script walks the entire directory tree and converts the files it finds, writing the result to the equivalent position in a new directory. The script also handles email files (.msg and .eml suffixes). For these, attachments are converted and saved in the form {filename}.{attachment name} where filename is the original email file name with suffix removed, and attachment name is the converted attachment file name.
+This is a utility to convert a directory full of files. The script walks the entire directory tree and converts the files it finds, writing the result to the equivalent position in a new directory. The script also handles email files (.msg and .eml suffixes). For these, attachments are converted and saved back into the email (which is saved in mbox, or .eml form).
 
   bin/cvheathen [-v] -i {in-dir} -o {out-dir}
 

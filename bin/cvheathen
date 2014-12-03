@@ -75,39 +75,51 @@ def convert_file filename, content, in_dir, out_dir, language
   end
 end
 
+# Emails are a special case - we need read the email, convert attachments, swap them into the email and
+# save the email in .eml format
+def convert_email filename, in_dir, out_dir, language
+  email = Mail.read( File.extname(filename)=='.msg' ? convert_msg(filename, in_dir, out_dir) : filename )
+  f_base = filename.gsub /#{File.extname(filename)}$/, ''
+  logger.debug "  email file, has #{email.attachments.size} attachments"
+  new_attachments = []
+  converter = AutoHeathen::Converter.new( { logger: logger } )
+  email.attachments.each do |attachment|
+    content = attachment.decoded
+    action = converter.get_action content.content_type
+    logger.debug "  convert: #{File.basename(filename)}, content_type: #{content.content_type}, action: #{action}"
+    start_time = Time.now
+    outfile, data = converter.convert action, language, attachment.filename, content
+    logger.debug "  conversion took %0.2f s"%[Time.now-start_time]
+    new_attachments << { filename: File.basename(outfile), data: data }
+  end
+  email.charset = 'UTF-8' unless email.charset # stop annoying warning message if charset not defined in email
+  # Mail#without_attachments! does not work correctly
+  #email.without_attachments!
+  email.parts.delete_if { |p| p.attachment? }
+  new_attachments.each do |na|
+    email.attachments[na[:filename]] = na[:data]
+  end
+  e_filename = to_outfile in_dir, filename, out_dir, "#{f_base}.eml"
+  logger.debug "  writing #{e_filename} with #{email.attachments.size} converted attachments"
+  File.open( e_filename, 'wb' ) do |f|
+    f.write email.to_s
+  end
+end
+
+
 #
 # Find all files and convert them
 #
-Dir.glob( "#{in_dir}/**/*" ).each do |file|
-  next if File.directory? file
-  logger.info "Processing: #{file}"
+Dir.glob( "#{in_dir}/**/*" ).each do |filename|
+  next if File.directory? filename
+  logger.info "Processing: #{filename}"
 
   begin
-    if [ '.msg', '.eml' ].include? File.extname(file)
-      # Emails are a special case - we need read the email, convert attachments and save them along with the email text
-      # converted attachments will be saved as {email filename}.{attachment filename}, e.g. given this file:
-      #    B877.msg (with attachments foo.jpg, bar.docx)
-      # we would end up with these files saved:
-      #    B877.foo.pdf, B877.bar.pdf B877.eml
-      # The .eml file is the email with attachments stripped out. This is done because we don't think Sharepoint can index
-      # email attachments (which is the point of this script).
-      email = Mail.read( File.extname(file)=='.msg' ? convert_msg(file, in_dir, out_dir) : file )
-      f_base = file.gsub /#{File.extname(file)}$/, ''
-      logger.debug "  email file, has #{email.attachments.size} attachments"
-      email.attachments.each do |attachment|
-        a_filename = "#{f_base}.#{attachment.filename}"
-        convert_file a_filename, attachment.decoded, in_dir, out_dir, language
-      end
-      email.without_attachments!
-      email.charset = 'utf-8' unless email.charset # stop annoying warning message if charset not defined in email
-      e_filename = to_outfile in_dir, file, out_dir, "#{f_base}.eml"
-      logger.debug "  writing #{e_filename} without attachments"
-      File.open( e_filename, 'wb' ) do |f|
-        f.write email.to_s
-      end
+    if [ '.msg', '.eml' ].include? File.extname(filename)
+      convert_email filename, in_dir, out_dir, language
     else
-      content = File.read(file)
-      convert_file file, content, in_dir, out_dir, language
+      content = File.read(filename)
+      convert_file filename, content, in_dir, out_dir, language
     end
   rescue StandardError => e
     logger.warn "  failed: #{e.message}"
