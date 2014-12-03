@@ -1,0 +1,8 @@
+language: 'en'
+from: 'noreply@ifad.org'
+verbose: false
+text_template: 'spec/support/autoheathen.text.haml'
+html_template: 'spec/support/autoheathen.html.haml'
+heathen_base_uri: 'http://localhost:10000'
+mail_host: 'localhost'
+mail_port: 25

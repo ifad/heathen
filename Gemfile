@@ -7,6 +7,18 @@ gem 'dragonfly',          '~> 0.9.12'
 gem 'rack-cache',         '~> 1.2'
 gem 'rake',               '~> 10.0.3'
 gem 'wkhtmltopdf-binary'
+gem 'hpricot',            '~> 0.8.6'
+# Required by autoheathen
+gem 'mail'
+gem 'haml'
+gem 'ruby-filemagic'
+gem 'mime-types'
+gem 'net_dav'
+gem 'curb'
+
+group :staging, :production do
+  gem 'unicorn'
+end
 
 group :development do
   gem 'capistrano',         '~> 2.13.5'
@@ -14,6 +26,7 @@ group :development do
   gem 'airbrake',           '~> 3.1.6'
   gem 'pry'
   gem 'shotgun'
+  gem 'rspec'
 end
 
 platform :ruby do

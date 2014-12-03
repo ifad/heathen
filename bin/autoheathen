@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+#
+# Script:      autoheathen
+# Description: This script takes an encoded mail message from standard input and forwards
+#              any attachments of the allowed MIME types to a Heathen server for translation.
+#
+#              The resulting translated files are then delivered in accordance with the
+#              command line switches provided.
+#
+# Usage:       {mailfile} | heathen_mailstream { -r | -t EMAIL | -s } {opts}
+#
+# Options:     -r      return converted files to sender email address
+#              -t      send converted files to the specified mail inbox
+#              -s      don't deliver, just output a summary
+#
+#              run "heathen_mailstream -h" to get a list of other options, which are basically
+#              configuration settings for mail host, etc. It is also possible
+#              to load all of the configuration from a YAML file (-C flag).
+#
+require 'optparse'
+require 'pathname'
+$: << Pathname.new(__FILE__).realpath.parent.parent + 'lib'
+require 'autoheathen'
+require 'mail'
+
+cfg = {}
+mode = :return_to_sender
+mail_to = nil
+
+OptionParser.new do |opts|
+  opts.on( '-r', '--return-to-sender', 'Converted files will be emailed back to sender' ) { mode = :return_to_sender }
+  opts.on( '-t', '--to EMAIL', 'Converted files will be emailed to this address' ) { |e| mode = :email; mail_to = e }
+  opts.on( '-s', '--summary', 'Don\'t deposit the converted file, just log a summary' ) { cfg[:deliver] = false }
+  opts.on( '-M', '--mail-host MAILHOST', 'Mail server for sending replies' ) { |h| cfg[:mail_host] = h }
+  opts.on( '-P', '--mail-port PORT', Integer, 'Mail server port' ) { |p| cfg[:mail_port] = p }
+  opts.on( '-C', '--config FILE', 'Configuration YAML file' ) { |file| cfg[:config_file] = file }
+  opts.on( '-v', '--verbose', 'Running commentary' ) { cfg[:verbose] = true }
+end.parse!
+
+email = Mail.read $stdin
+processor = AutoHeathen::EmailProcessor.new(cfg)
+case mode
+  when :return_to_sender
+    processor.process_rts email
+  when :email
+    processor.process email, mail_to
+end

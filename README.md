@@ -103,6 +103,40 @@ To remove these mappings, you can run `rake heathen:redis:clear`.
 
 For convenience, to clear both redis and the cache, plus any residual temp files that may not have been cleaned up by Heathen, you can run `rake heathen:clear`.
 
+## AutoHeathen
+AutoHeathen is a utility to allow people to email the documents they want converted to Heathen, which then converts them and either returns the converted documents to sender, or forwards them on to a configured email address. The general idea is that bin/autoheathen will be called by a mail forwarding script, which pipes the email into $stdin.
+
+As an example for configuration, here is how we did it with postfix:
+
+1. Postfix relay
+
+/etc/postfix/aliases:
+
+  heathen.rts: :include:/app/heathen/current/config/heathen.rts
+
+(remember to run sudo postalias /etc/postfix/aliases afterwards)
+ 
+2. Forwarding script
+
+/app/heathen/current/config/heathen.rts:
+
+  |"(cd /app/heathen/current; /home/heathen/.rbenv/bin/rbenv exec bundle exec bin/autoheathen -r -C config/autoheathen.yml>> log/autoheathen.log 2>&1)"
+
+3. Config
+
+Edit autoheathen.yml to suit the location of your heathen app (possibly via a reverse proxy like nginx if the unicorns are listening on a domain socket rather than TCP/IP).
+
+## CVHeathen
+This is a utility to convert a directory full of files. The script walks the entire directory tree and converts the files it finds, writing the result to the equivalent position in a new directory. The script also handles email files (.msg and .eml suffixes). For these, attachments are converted and saved back into the email (which is saved in mbox, or .eml form).
+
+  bin/cvheathen [-v] -i {in-dir} -o {out-dir}
+
+  # -v = verbose
+
+In order to convert .msg files to a readable form, the utility uses a Perl library (Email::Outlook::Message). To install the appropriate Debian packages, run:
+
+  sudo apt-get install libemail-outlook-message-perl libemail-sender-perl
+
 ## License
 MIT
 

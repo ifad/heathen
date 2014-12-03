@@ -1,0 +1,130 @@
+#!/usr/bin/env ruby
+#
+# Script:      cvheathen
+# Description: This script will walk a directory, looking for files to convert, send them to Heathen
+#              and store the results in a second directory, with the same tree structure.
+#
+#              Email files (.msg and .eml) will have their attachments converted and saved back inside the
+#              email (in the new directory), in .eml form.
+#
+# Usage:       cvheathen -i DIR -o DIR {opts}
+#
+# Options:     -i      directory to read files from
+#              -o      directory to write converted file to
+#
+#
+require 'optparse'
+require 'pathname'
+$: << Pathname.new(__FILE__).realpath.parent.parent
+$: << Pathname.new(__FILE__).realpath.parent.parent + 'lib'
+require 'autoheathen'
+require 'mail'
+
+in_dir = nil
+out_dir = nil
+$logger = Logger.new(nil)
+language = 'en'
+
+OptionParser.new do |opts|
+  opts.on( '-i', '--input-directory DIR', 'Directory to read from' ) { |i| in_dir = i }
+  opts.on( '-o', '--output-directory DIR', 'Converted files will be stored in this directory' ) { |d| out_dir = d }
+  opts.on( '-v', '--verbose', 'Running commentary' ) { $logger = Logger.new(STDOUT) }
+  opts.on( '-l', '--language LANGUAGE', 'The language of the input files (currently only "en" and "es" allowed)' ) { |l| language = l }
+  opts.on( '-h', '--help', 'This message' ) { puts opts; exit }
+end.parse!
+
+abort "Please specify an input directory" unless in_dir
+abort "Please specify an output directory" unless out_dir
+
+def logger
+  $logger
+end
+
+# Constructs a destination file name from the given parameters. If the destination directory
+# does not exist, creates it.
+def to_outfile in_dir, orig_filename, out_dir, new_filename
+  dir_part = File.dirname( orig_filename.gsub "#{in_dir}/", "")
+  outdir = Pathname.new(out_dir) + File.dirname(dir_part)
+  FileUtils.mkdir_p outdir unless File.exist? outdir
+  outfile = outdir + File.basename(new_filename)
+  outfile
+end
+
+# Converts .msg file to .eml structure
+def convert_msg filename, in_dir, out_dir
+  new_filename = to_outfile in_dir, filename, out_dir, filename.gsub( /.msg$/, '.eml' )
+  rv = Heathen::Executioner.new(logger).execute( "#{File.dirname __FILE__}/msgconvert.pl", filename, new_filename )
+  raise "Cannot run msgconvert.pl (see README.md for installation instructions" if rv != 0
+  raise "Failed to convert #{filename} to .eml" unless File.exist? new_filename
+  new_filename
+end
+
+# Converts a given file. Note that the file has already been read
+# thus allowing us to convert and save a mail attachment
+def convert_file filename, content, in_dir, out_dir, language
+  # Convert the file
+  converter = AutoHeathen::Converter.new( { logger: logger } )
+  action = converter.get_action content.content_type
+  logger.debug "  convert: #{File.basename(filename)}, content_type: #{content.content_type}, action: #{action}"
+  start_time = Time.now
+  outfile, data = converter.convert action, language, filename, content
+  logger.debug "  conversion took %0.2f s"%[Time.now-start_time]
+
+  # Save the file
+  outfile = to_outfile in_dir, filename, out_dir, outfile
+  logger.info "  writing file: #{outfile}"
+  File.open outfile, "w" do |f|
+    f.write data
+  end
+end
+
+# Emails are a special case - we need read the email, convert attachments, swap them into the email and
+# save the email in .eml format
+def convert_email filename, in_dir, out_dir, language
+  email = Mail.read( File.extname(filename)=='.msg' ? convert_msg(filename, in_dir, out_dir) : filename )
+  f_base = filename.gsub /#{File.extname(filename)}$/, ''
+  logger.debug "  email file, has #{email.attachments.size} attachments"
+  new_attachments = []
+  converter = AutoHeathen::Converter.new( { logger: logger } )
+  email.attachments.each do |attachment|
+    content = attachment.decoded
+    action = converter.get_action content.content_type
+    logger.debug "  convert: #{File.basename(filename)}, content_type: #{content.content_type}, action: #{action}"
+    start_time = Time.now
+    outfile, data = converter.convert action, language, attachment.filename, content
+    logger.debug "  conversion took %0.2f s"%[Time.now-start_time]
+    new_attachments << { filename: File.basename(outfile), data: data }
+  end
+  email.charset = 'UTF-8' unless email.charset # stop annoying warning message if charset not defined in email
+  # Mail#without_attachments! does not work correctly
+  #email.without_attachments!
+  email.parts.delete_if { |p| p.attachment? }
+  new_attachments.each do |na|
+    email.attachments[na[:filename]] = na[:data]
+  end
+  e_filename = to_outfile in_dir, filename, out_dir, "#{f_base}.eml"
+  logger.debug "  writing #{e_filename} with #{email.attachments.size} converted attachments"
+  File.open( e_filename, 'wb' ) do |f|
+    f.write email.to_s
+  end
+end
+
+
+#
+# Find all files and convert them
+#
+Dir.glob( "#{in_dir}/**/*" ).each do |filename|
+  next if File.directory? filename
+  logger.info "Processing: #{filename}"
+
+  begin
+    if [ '.msg', '.eml' ].include? File.extname(filename)
+      convert_email filename, in_dir, out_dir, language
+    else
+      content = File.read(filename)
+      convert_file filename, content, in_dir, out_dir, language
+    end
+  rescue StandardError => e
+    logger.warn "  failed: #{e.message}"
+  end
+end
