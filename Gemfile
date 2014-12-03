@@ -36,10 +36,10 @@ platform :ruby do
   gem 'pdfbeads', github: 'ifad/pdfbeads'
 end
 
-platform :jruby do
-  gem 'ruby-debug-base', github: 'ifad/jruby-debug'
-  gem 'ruby-debug'
-  gem 'rmagick4j'
-  gem 'json'
-  gem 'puma'
-end
+#platform :jruby do
+#  gem 'ruby-debug-base', github: 'ifad/jruby-debug'
+#  gem 'ruby-debug'
+#  gem 'rmagick4j'
+#  gem 'json'
+#  gem 'puma'
+#end

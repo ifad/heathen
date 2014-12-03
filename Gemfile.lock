@@ -109,21 +109,16 @@ DEPENDENCIES
   haml
   hpricot (~> 0.8.6)
   iconv
-  json
   mail
   mime-types
   pdfbeads!
   pry
-  puma
   rack-cache (~> 1.2)
   rake (~> 10.0.3)
   redis (~> 3.0.2)
   redis-namespace (~> 1.2.1)
   rmagick
-  rmagick4j
   rspec
-  ruby-debug
-  ruby-debug-base!
   ruby-filemagic
   shotgun
   sinatra (~> 1.3.3)
