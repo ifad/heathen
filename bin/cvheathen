@@ -12,45 +12,51 @@
 #
 require 'optparse'
 require 'pathname'
+$: << Pathname.new(__FILE__).realpath.parent.parent
 $: << Pathname.new(__FILE__).realpath.parent.parent + 'lib'
-require 'autoheathen/standalone'
+require 'autoheathen'
 
-cfg = { 
-  overwrite: false,
-}
+in_dir = nil
+out_dir = nil
+logger = Logger.new(nil)
+language = 'en'
 
 OptionParser.new do |opts|
-  opts.on( '-i', '--input-directory DIR', 'Directory to read from' ) { |i| cfg[:in_dir] = i }
-  opts.on( '-o', '--output-directory DIR', 'Converted files will be stored in this directory' ) { |d| cfg[:out_dir] = d }
-  opts.on( '-f', '--force', 'Overwrite existing converted file - default is to skip it' ) { cfg[:overwrite] = true }
-  opts.on( '-H', '--heathen-base-uri URI', 'Base URI for heathen' ) { |h| cfg[:heathen_base_uri] = h }
-  opts.on( '-C', '--config FILE', 'Configuration YAML file' ) { |file| cfg[:config_file] = file }
-  opts.on( '-v', '--verbose', 'Running commentary' ) { cfg[:verbose] = true }
+  opts.on( '-i', '--input-directory DIR', 'Directory to read from' ) { |i| in_dir = i }
+  opts.on( '-o', '--output-directory DIR', 'Converted files will be stored in this directory' ) { |d| out_dir = d }
+  opts.on( '-v', '--verbose', 'Running commentary' ) { logger = Logger.new(STDOUT) }
+  opts.on( '-l', '--language LANGUAGE', 'The language of the input files (currently only "en" and "es" allowed)' ) { |l| language = l }
   opts.on( '-h', '--help', 'This message' ) { puts opts; exit }
 end.parse!
 
-processor = AutoHeathen::Standalone.new cfg
+abort "Please specify an input directory" unless in_dir
+abort "Please specify an output directory" unless out_dir
 
-Dir.glob( "#{cfg[:in_dir]}/**/*" ).each do |file|
+converter = AutoHeathen::Converter.new( { logger: logger } )
+
+Dir.glob( "#{in_dir}/**/*" ).each do |file|
   next if File.directory? file
+
+  # Construct the output directory
+  dir_part = File.dirname( file.gsub "#{in_dir}/", "")
+  outdir = Pathname.new(out_dir) + File.dirname(dir_part)
+  FileUtils.mkdir_p outdir unless File.exist? outdir
+
+  logger.info "Processing: #{file}"
+
   begin
-    dir_part = File.dirname( file.gsub "#{cfg[:in_dir]}/", "")
-    outfile = "#{cfg[:out_dir]}/#{dir_part}/#{processor.converted_filename file}"
-    if File.exist?(outfile) && cfg[:overwrite] == false
-      puts "#{file} -> skipped (already exists)"
-    else
-      start_time = Time.now
-      processor.process File.read(file), File.basename(file) do |content,new_filename|
-        outfile = "#{cfg[:out_dir]}/#{dir_part}/#{new_filename}"
-        outdir = File.dirname outfile
-        FileUtils.mkdir_p outdir unless File.exist? outdir
-        File.open outfile, 'wb' do |f|
-          f.write content
-        end
-        puts "#{file} -> #{outfile} %0.2f s"%[Time.now-start_time]
-      end
+    content = File.read(file)
+    action = converter.get_action content.content_type
+    logger.debug "  content_type: #{content.content_type}, action: #{action}"
+    start_time = Time.now
+    outfile, data = converter.convert action, language, file, content
+    outfile = outdir + File.basename(outfile)
+    logger.info " writing file: #{outfile}"
+    File.open outfile, "w" do |f|
+      f.write data
     end
+    logger.debug " completed in %0.2f s"%[Time.now-start_time]
   rescue StandardError => e
-    puts "#{file} -- failed: #{e.message}"
+    logger.warn "  failed: #{e.message}"
   end
 end

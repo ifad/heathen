@@ -30,9 +30,6 @@ GEM
       rubinius-actor
     haml (4.0.3)
       tilt
-    heathen-client (1.1.1)
-      rest-client (~> 1.6.7)
-      yajl-ruby (~> 1.1.0)
     highline (1.6.15)
     hpricot (0.8.6)
     iconv (1.0.4)
@@ -65,8 +62,6 @@ GEM
     redis (3.0.2)
     redis-namespace (1.2.1)
       redis (~> 3.0.0)
-    rest-client (1.6.7)
-      mime-types (>= 1.16)
     rmagick (2.13.2)
     rspec (3.1.0)
       rspec-core (~> 3.1.0)
@@ -108,10 +103,10 @@ DEPENDENCIES
   curb
   dragonfly (~> 0.9.12)
   haml
-  heathen-client
   hpricot (~> 0.8.6)
   iconv
   mail
+  mime-types
   net_dav
   pdfbeads (~> 1.0.9)
   pdfkit (~> 0.5.2)

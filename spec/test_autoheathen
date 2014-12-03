@@ -16,11 +16,8 @@ email_addr = `/usr/bin/whoami`
 email_file = nil
 
 OptionParser.new do |opts|
-  opts.on( '-m', '--mode MODE', ['dir','rts','email','summary'], 'Output mode of streamer' ) do |mode|
+  opts.on( '-m', '--mode MODE', ['rts','email'], 'Output mode of streamer' ) do |mode|
     case mode
-      when 'dir'
-        Dir.mkdir 'foo'
-        outmode = '-d foo'
       when 'rts'
         outmode = '-r'
       when 'email'
@@ -34,10 +31,10 @@ end.parse!
 mail = Mail.new do
   to email_addr
   from email_addr
-  subject 'Convert: please'
+  subject 'Fwd: Convert: please'
   body 'Please convert these files'
   add_file 'support/test1.doc'
-  add_file 'support/poem1.jpg'
+  add_file 'support/quickfox.jpg'
 end
 
 BASE=Pathname.new(__FILE__).realpath.parent.parent

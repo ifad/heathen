@@ -16,8 +16,8 @@ gem 'iconv'
 # Required by autoheathen
 gem 'mail'
 gem 'haml'
-gem 'heathen-client'
 gem 'ruby-filemagic'
+gem 'mime-types'
 gem 'net_dav'
 gem 'curb'
 
