@@ -13,8 +13,6 @@ gem 'mail'
 gem 'haml'
 gem 'ruby-filemagic'
 gem 'mime-types'
-gem 'net_dav'
-gem 'curb'
 
 group :staging, :production do
   gem 'unicorn'
