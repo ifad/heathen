@@ -14,7 +14,7 @@ module Heathen
           throw :unable_to_handle
         end
 
-        if content = wkhtmltopdf(temp_object.data)
+        if content = wkhtmltopdf(temp_object.path)
           [ content, meta(temp_object, :pdf, 'application/pdf') ]
         else
           raise Heathen::NotConverted.new({
