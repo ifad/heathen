@@ -6,7 +6,6 @@ gem 'redis-namespace',    '~> 1.2.1'
 gem 'dragonfly',          '~> 0.9.12'
 gem 'rack-cache',         '~> 1.2'
 gem 'rake',               '~> 10.0.3'
-gem 'wkhtmltopdf-binary'
 gem 'hpricot',            '~> 0.8.6'
 # Required by autoheathen
 gem 'mail'
