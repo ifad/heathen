@@ -20,6 +20,7 @@ module Heathen
       App::Debugger.configure(app)
       App::Redis.configure(app)
       App::Dragonfly.configure(app)
+      App::Wkhtmltopdf.configure(app)
     end
   end
 end

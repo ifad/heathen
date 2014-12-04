@@ -3,10 +3,8 @@ module Heathen
 
     module Concerns::Wkhtmltopdf
 
-      WKHTMLTOPDF = ENV['WKHTMLTOPDF'] || 'wkhtmltopdf'
-
       def wkhtmltopdf(source)
-        executioner.execute(WKHTMLTOPDF,
+        executioner.execute(Heathen::App.wkhtmltopdf,
           '--page-size', 'Letter',
           '--margin-top',    '0.75in',
           '--margin-right',  '0.75in',
