@@ -37,7 +37,7 @@ Heathen requires the following libraries/binaries to be installed, and the versi
 * LibreOffice + PyUNO (3.6)
 * Python              (2.7)
 * ImageMagick         (6.8.2-4)
-* wkhtmltopdf         (0.9.6)
+* wkhtmltopdf         (0.12.1)
 * tesseract           (3.02.02)
 * redis               (2.4.15)
     
@@ -77,6 +77,13 @@ soffice --headless --accept='socket,host=127.0.0.1,port=8100;urp;'
 
 **NOTE**: If you are running Heathen behind [Unicorn](http://unicorn.bogomips.org/) or something similar, you will need to increase the allowed response time to be much greater than 30 seconds. There are plans to make Heathen behave asynchronously in the future which should avoid the need for this kind of configuration.
 
+
+**NOTE**: If you want to specify the path to the [wkhtmltopdf](http://wkhtmltopdf.org) binary you can set the `WKHTMLTOPDF` environment variable
+
+```
+export WKHTMLTOPDF="/path/to/wkhtmltopdf"
+```
+
 ## Use It
 While Heathen is meant to be used as an API (see https://github.com/ifad/heathen-client), it also has a minimal front-end.
 
@@ -102,6 +109,17 @@ Additionally, when content is sent to Heathen, a hash is computed which acts as 
 To remove these mappings, you can run `rake heathen:redis:clear`.
 
 For convenience, to clear both redis and the cache, plus any residual temp files that may not have been cleaned up by Heathen, you can run `rake heathen:clear`.
+
+## HTML to PDF
+In order to convert html to pdf `heathen` uses `wkhtmltopdf`. If you
+want to use any of the options explained in the
+[documentation](http://wkhtmltopdf.org/usage/wkhtmltopdf.txt) you can
+set them using `meta` tags in the html where the name of the tag sould
+start with `heathen`.
+
+```
+<meta name='heathen-foo' content='bars'>
+```
 
 ## AutoHeathen
 AutoHeathen is a utility to allow people to email the documents they want converted to Heathen, which then converts them and either returns the converted documents to sender, or forwards them on to a configured email address. The general idea is that bin/autoheathen will be called by a mail forwarding script, which pipes the email into $stdin.
@@ -141,6 +159,6 @@ In order to convert .msg files to a readable form, the utility uses a Perl libra
 MIT
 
 ## Copyright
-&copy; IFAD 2013
+&copy; IFAD 2014
 
 
