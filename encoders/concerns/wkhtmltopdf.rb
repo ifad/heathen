@@ -28,12 +28,17 @@ module Heathen
           ]
 
           attrs = html.xpath("//meta[starts-with(@name, 'heathen')]").inject({}) do |h, meta|
-            name = meta.attributes['name'].value.sub(/^heathen/, '-')
+            name  = meta.attributes['name'].value.sub(/^heathen/, '-')
+            value = if meta.attributes.key?('content')
+              unless (v = meta.attributes['content'].value.strip).size.zero?
+                v
+              end
+            end
 
-            h.merge(name => meta.attributes['content'].value)
+            h.merge(name => value)
           end
 
-          attrs.inject(defl){ |d, (k,v)| d << [k, v] }.flatten
+          attrs.inject(defl){ |d, (k,v)| d << [k, v] }.flatten.compact
         end
 
     end
