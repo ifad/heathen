@@ -131,9 +131,9 @@ module AutoHeathen
     def deliver mail
       if @cfg[:deliver]
         mail.deliver!
-        logger.debug "Files were emailed to #{mail_to}"
+        logger.debug "Files were emailed to #{mail.to}"
       else
-        logger.debug "Files would have been emailed to #{mail_to}, but #{self.class.name} is configured not to"
+        logger.debug "Files would have been emailed to #{mail.to}, but #{self.class.name} is configured not to"
       end
     end
 

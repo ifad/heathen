@@ -14,7 +14,7 @@ gem 'ruby-filemagic'
 gem 'mime-types'
 
 group :staging, :production do
-  gem 'unicorn'
+#  gem 'unicorn'
 end
 
 group :development do
