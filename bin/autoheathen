@@ -19,6 +19,7 @@
 #
 require 'optparse'
 require 'pathname'
+$: << Pathname.new(__FILE__).realpath.parent.parent
 $: << Pathname.new(__FILE__).realpath.parent.parent + 'lib'
 require 'autoheathen'
 require 'mail'
@@ -37,7 +38,7 @@ OptionParser.new do |opts|
   opts.on( '-v', '--verbose', 'Running commentary' ) { cfg[:verbose] = true }
 end.parse!
 
-email = Mail.read $stdin
+email = Mail.read_from_string $stdin.read
 processor = AutoHeathen::EmailProcessor.new(cfg)
 case mode
   when :return_to_sender
