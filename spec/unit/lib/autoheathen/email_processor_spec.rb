@@ -5,6 +5,7 @@ describe AutoHeathen::EmailProcessor do
   before :all do
     @processor = AutoHeathen::EmailProcessor.new( {}, support_path+'autoheathen.yml' )
     @email = Mail.read( support_path + 'test1.eml' )
+    @email.from [ 'bob@deviant.localdomain' ]
     @email.cc [ 'mrgrumpy', 'marypoppins' ]
     @email.return_path [ 'jblackman@debian.localdomain' ]
     @email.header['X-Received'] = 'misssilly'
@@ -25,7 +26,7 @@ describe AutoHeathen::EmailProcessor do
   it 'processes email' do
     to_address = 'bob@localhost'
     expect(@processor).to receive(:deliver) do |mail|
-      expect(mail.from).to eq ['noreply@ifad.org']
+      expect(mail.from).to eq @email.from
       expect(mail.to).to eq [to_address]
       expect(mail.subject).to eq "Re: Fwd: Convert: please"
       expect(mail.attachments.size).to eq 1

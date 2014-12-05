@@ -40,13 +40,13 @@ module AutoHeathen
     end
 
     def process_rts email
-      process email, email.from
+      process email, email.from, true
     end
 
     # Processes the given email, submits attachments to the Heathen server, delivers responses as configured
     # @param input A string containing the encoded email (suitable to be decoded using Mail.read(input)
     # @return a hash of the decoded attachments (or the reason why they could not be decoded)
-    def process email, mail_to
+    def process email, mail_to, is_rts=false
       documents = []
 
       unless email.has_attachments?
@@ -74,7 +74,7 @@ module AutoHeathen
       #
       # deliver the results
       #
-      deliver_email email, documents, mail_to
+      deliver_email email, documents, mail_to, is_rts
 
       #
       # Summarise the processing
@@ -92,11 +92,11 @@ module AutoHeathen
     end
 
     # Send documents to email
-    def deliver_email email, documents, mail_to
+    def deliver_email email, documents, mail_to, is_rts
       cc_list = email.cc && email.cc.size > 0 ? email.cc : nil
       logger.info "Sending response mail to #{mail_to}"
       mail = Mail.new
-      mail.from @cfg[:from]
+      mail.from is_rts ? @cfg[:from] : email.from
       mail.to mail_to
       # CCs to the original email will get a copy of the converted files as well
       mail.cc cc_list if cc_list

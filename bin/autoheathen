@@ -35,7 +35,7 @@ OptionParser.new do |opts|
   opts.on( '-M', '--mail-host MAILHOST', 'Mail server for sending replies' ) { |h| cfg[:mail_host] = h }
   opts.on( '-P', '--mail-port PORT', Integer, 'Mail server port' ) { |p| cfg[:mail_port] = p }
   opts.on( '-C', '--config FILE', 'Configuration YAML file' ) { |file| cfg[:config_file] = file }
-  opts.on( '-v', '--verbose', 'Running commentary' ) { cfg[:verbose] = true }
+  opts.on( '-v', '--verbose', 'Running commentary' ) { cfg[:logger] = Logger.new(STDOUT) }
 end.parse!
 
 email = Mail.read_from_string $stdin.read
