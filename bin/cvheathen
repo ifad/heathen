@@ -7,7 +7,7 @@
 #              Email files (.msg and .eml) will have their attachments converted and saved back inside the
 #              email (in the new directory), in .eml form.
 #
-# Usage:       cvheathen -i DIR -o DIR {opts}
+# Usage:       bundle exec bin/cvheathen -i DIR -o DIR {opts}
 #
 # Options:     -i      directory to read files from
 #              -o      directory to write converted file to
@@ -73,7 +73,7 @@ def convert_file filename, content, in_dir, out_dir, language
   # Save the file
   outfile = to_outfile in_dir, filename, out_dir, outfile
   logger.info "  writing file: #{outfile}"
-  File.open outfile, "w" do |f|
+  File.open outfile, "wb" do |f|
     f.write data
   end
 end
@@ -104,7 +104,7 @@ def convert_email filename, in_dir, out_dir, language
   end
   e_filename = to_outfile in_dir, filename, out_dir, "#{f_base}.eml"
   logger.debug "  writing #{e_filename} with #{email.attachments.size} converted attachments"
-  File.open( e_filename, 'wb' ) do |f|
+  File.open( e_filename, 'w' ) do |f|
     f.write email.to_s
   end
 end
@@ -121,7 +121,7 @@ Dir.glob( "#{in_dir}/**/*" ).each do |filename|
     if [ '.msg', '.eml' ].include? File.extname(filename)
       convert_email filename, in_dir, out_dir, language
     else
-      content = File.read(filename)
+      content = File.binread(filename)
       convert_file filename, content, in_dir, out_dir, language
     end
   rescue StandardError => e

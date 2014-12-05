@@ -50,11 +50,12 @@ module AutoHeathen
       logger.debug "  converting #{filename} (#{input_content.content_type}) using action #{action}"
       converter = Heathen::App.converter
       job = converter.new_job input_content, name: filename
-      job.meta.merge!( mime_type: job.mime_type, language: language )
+      job.meta.merge!( mime_type: job.mime_type, language: language, name: filename )
       raise "Unable to convert #{filename} using action #{action}" unless can_convert?(job)
       job = job.respond_to?(action.to_sym) ? job.send(action.to_sym) : job.encode(:pdf)
       job = job.apply
       data = job.data
+
       return converted_filename(filename,data), data
     end
 

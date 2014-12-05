@@ -7,7 +7,7 @@
 #              The resulting translated files are then delivered in accordance with the
 #              command line switches provided.
 #
-# Usage:       {mailfile} | heathen_mailstream { -r | -t EMAIL | -s } {opts}
+# Usage:       {mailfile} | bundle exec {path to}/autoheathen { -r | -t EMAIL | -s } {opts}
 #
 # Options:     -r      return converted files to sender email address
 #              -t      send converted files to the specified mail inbox
