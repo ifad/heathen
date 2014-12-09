@@ -101,7 +101,8 @@ module AutoHeathen
       # CCs to the original email will get a copy of the converted files as well
       mail.cc cc_list if cc_list
       # Don't prepend yet another Re:
-      mail.subject "#{'Re: ' unless email.subject.start_with? 'Re:'}#{email.subject}"
+      #mail.subject "#{'Re: ' unless email.subject.start_with? 'Re:'}#{email.subject}"
+      mail.subject "Wikilex"
       # Construct received path
       # TODO: is this in the right order?
       rcv = "by localhost(autoheathen); #{Time.now.strftime '%a, %d %b %Y %T %z'}"
