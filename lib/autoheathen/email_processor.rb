@@ -94,6 +94,7 @@ module AutoHeathen
     # Send documents to email
     def deliver_email email, documents, mail_to, is_rts
       cc_list = email.cc && email.cc.size > 0 ? email.cc : nil
+      cc_list -= email.to if cc_list # Prevent autoheathen infinite loop!
       logger.info "Sending response mail to #{mail_to}"
       mail = Mail.new
       mail.from is_rts ? @cfg[:from] : email.from
@@ -101,8 +102,7 @@ module AutoHeathen
       # CCs to the original email will get a copy of the converted files as well
       mail.cc cc_list if cc_list
       # Don't prepend yet another Re:
-      #mail.subject "#{'Re: ' unless email.subject.start_with? 'Re:'}#{email.subject}"
-      mail.subject "Wikilex"
+      mail.subject "#{'Re: ' unless email.subject.start_with? 'Re:'}#{email.subject}"
       # Construct received path
       # TODO: is this in the right order?
       rcv = "by localhost(autoheathen); #{Time.now.strftime '%a, %d %b %Y %T %z'}"

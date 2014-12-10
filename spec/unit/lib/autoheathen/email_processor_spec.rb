@@ -5,8 +5,9 @@ describe AutoHeathen::EmailProcessor do
   before :all do
     @processor = AutoHeathen::EmailProcessor.new( {}, support_path+'autoheathen.yml' )
     @email = Mail.read( support_path + 'test1.eml' )
+    @email.to [ 'bob@localhost.localdomain' ]
     @email.from [ 'bob@deviant.localdomain' ]
-    @email.cc [ 'mrgrumpy', 'marypoppins' ]
+    @email.cc [ 'mrgrumpy', 'marypoppins', 'bob@localhost.localdomain' ]
     @email.return_path [ 'jblackman@debian.localdomain' ]
     @email.header['X-Received'] = 'misssilly'
 
@@ -34,7 +35,7 @@ describe AutoHeathen::EmailProcessor do
       expect(mail.html_part.decoded.size).to be > 0
       expect(mail.delivery_method.settings[:port]).to eq 25
       expect(mail.delivery_method.settings[:address]).to eq 'localhost'
-      expect(mail.cc).to eq [ 'mrgrumpy', 'marypoppins' ]
+      expect(mail.cc).to eq [ 'mrgrumpy', 'marypoppins' ] # Test to exclude bob@localhost.localdomain
       expect(mail.received).to be_a Array
       expect(mail.received.size).to eq 2
       expect(mail.return_path).to eq 'jblackman@debian.localdomain'
@@ -53,7 +54,7 @@ describe AutoHeathen::EmailProcessor do
       expect(mail.html_part.decoded.size).to be > 0
       expect(mail.delivery_method.settings[:port]).to eq 25
       expect(mail.delivery_method.settings[:address]).to eq 'localhost'
-      expect(mail.cc).to eq [ 'mrgrumpy', 'marypoppins' ]
+      expect(mail.cc).to eq [ 'mrgrumpy', 'marypoppins' ] # Test to exclude bob@localhost.localdomain
       expect(mail.received).to be_a Array
       expect(mail.received.size).to eq 2
       expect(mail.return_path).to eq 'jblackman@debian.localdomain'
