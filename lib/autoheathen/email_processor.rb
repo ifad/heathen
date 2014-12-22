@@ -107,7 +107,7 @@ module AutoHeathen
       # TODO: is this in the right order?
       #rcv = "by localhost(autoheathen); #{Time.now.strftime '%a, %d %b %Y %T %z'}"
       #[email.received,rcv].flatten.each { |rec| mail.received rec.to_s }
-      mail.return_path email.return_path ? email.return_path
+      mail.return_path email.return_path if email.return_path
       mail.header['X-Received'] = email.header['X-Received'] if email.header['X-Received']
       documents.each do |doc|
         next if doc[:content].nil?
