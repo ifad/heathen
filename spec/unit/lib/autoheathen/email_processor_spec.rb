@@ -24,20 +24,16 @@ describe AutoHeathen::EmailProcessor do
     expect(@processor.cfg[:html_template]).to_not be_nil
   end
 
-  it 'processes email' do
+  it 'sends email onwards' do
     to_address = 'bob@localhost'
     expect(@processor).to receive(:deliver) do |mail|
       expect(mail.from).to eq @email.from
       expect(mail.to).to eq [to_address]
-      expect(mail.subject).to eq "Re: Fwd: Convert: please"
+      expect(mail.subject).to eq "Fwd: Convert: please"
       expect(mail.attachments.size).to eq 1
-      expect(mail.text_part.decoded.size).to be > 0
-      expect(mail.html_part.decoded.size).to be > 0
       expect(mail.delivery_method.settings[:port]).to eq 25
       expect(mail.delivery_method.settings[:address]).to eq 'localhost'
       expect(mail.cc).to eq [ 'mrgrumpy', 'marypoppins' ] # Test to exclude bob@localhost.localdomain
-      #expect(mail.received).to be_a Array
-      #expect(mail.received.size).to eq 2
       expect(mail.return_path).to eq 'jblackman@debian.localdomain'
       expect(mail.header['X-Received'].to_s).to eq 'misssilly'
     end

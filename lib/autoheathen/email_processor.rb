@@ -74,7 +74,11 @@ module AutoHeathen
       #
       # deliver the results
       #
-      deliver_email email, documents, mail_to, is_rts
+      if is_rts
+        deliver_rts email, documents, mail_to
+      else
+        deliver_onward email, documents, mail_to
+      end
 
       #
       # Summarise the processing
@@ -91,16 +95,31 @@ module AutoHeathen
       documents
     end
 
-    # Send documents to email
-    def deliver_email email, documents, mail_to, is_rts
+    # Forward the email to sender, with decoded documents replacing the originals
+    def deliver_onward email, documents, mail_to
+      logger.info "Sending response mail to #{mail_to}"
+      email.cc (email.cc - email.to) if email.cc # Prevent autoheathen infinite loop!
+      email.to mail_to
+      email.subject "#{'Fwd: ' unless email.subject.start_with? 'Fwd:'}#{email.subject}"
+      email.parts.delete_if { |p| p.attachment? }
+      documents.each do |doc|
+        next if doc[:content].nil?
+        email.add_file filename: doc[:filename], content: doc[:content]
+      end
+      email.delivery_method :smtp, address: @cfg[:mail_host], port: @cfg[:mail_port]
+      deliver email
+    end
+
+    # Send decoded documents back to sender
+    def deliver_rts email, documents, mail_to
       cc_list = email.cc && email.cc.size > 0 ? email.cc : nil
       cc_list -= email.to if cc_list # Prevent autoheathen infinite loop!
       logger.info "Sending response mail to #{mail_to}"
       mail = Mail.new
-      mail.from is_rts ? @cfg[:from] : email.from
+      mail.from @cfg[:from]
       mail.to mail_to
       # CCs to the original email will get a copy of the converted files as well
-      mail.cc cc_list if cc_list
+      mail.cc (email.cc - email.to) if email.cc # Prevent autoheathen infinite loop!
       # Don't prepend yet another Re:
       mail.subject "#{'Re: ' unless email.subject.start_with? 'Re:'}#{email.subject}"
       # Construct received path
