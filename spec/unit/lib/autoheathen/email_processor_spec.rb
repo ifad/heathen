@@ -2,12 +2,13 @@ require 'spec_helper'
 require 'autoheathen'
 
 describe AutoHeathen::EmailProcessor do
-  before :all do
+  before :each do
     @processor = AutoHeathen::EmailProcessor.new( {}, support_path+'autoheathen.yml' )
+    @email_to = 'bob@localhost.localdomain'
     @email = Mail.read( support_path + 'test1.eml' )
-    @email.to [ 'bob@localhost.localdomain' ]
+    @email.to [ @email_to ]
     @email.from [ 'bob@deviant.localdomain' ]
-    @email.cc [ 'mrgrumpy', 'marypoppins', 'bob@localhost.localdomain' ]
+    @email.cc [ 'mrgrumpy', 'marypoppins', @email_to ]
     @email.return_path [ 'jblackman@debian.localdomain' ]
     @email.header['X-Received'] = 'misssilly'
 
@@ -25,7 +26,7 @@ describe AutoHeathen::EmailProcessor do
   end
 
   it 'sends email onwards' do
-    to_address = 'bob@localhost'
+    to_address = 'bob@foober'
     expect(@processor).to receive(:deliver) do |mail|
       expect(mail.from).to eq @email.from
       expect(mail.to).to eq [to_address]
@@ -33,7 +34,7 @@ describe AutoHeathen::EmailProcessor do
       expect(mail.attachments.size).to eq 1
       expect(mail.delivery_method.settings[:port]).to eq 25
       expect(mail.delivery_method.settings[:address]).to eq 'localhost'
-      expect(mail.cc).to eq [ 'mrgrumpy', 'marypoppins' ] # Test to exclude bob@localhost.localdomain
+      expect(mail.cc).to eq [ 'mrgrumpy', 'marypoppins' ] # Test to exclude @email_to
       expect(mail.return_path).to eq 'jblackman@debian.localdomain'
       expect(mail.header['X-Received'].to_s).to eq 'misssilly'
     end
@@ -50,12 +51,28 @@ describe AutoHeathen::EmailProcessor do
       expect(mail.html_part.decoded.size).to be > 0
       expect(mail.delivery_method.settings[:port]).to eq 25
       expect(mail.delivery_method.settings[:address]).to eq 'localhost'
-      expect(mail.cc).to eq [ 'mrgrumpy', 'marypoppins' ] # Test to exclude bob@localhost.localdomain
+      expect(mail.cc).to eq [ 'mrgrumpy', 'marypoppins' ] # Test to exclude @email_to
       #expect(mail.received).to be_a Array
       #expect(mail.received.size).to eq 2
       expect(mail.return_path).to eq 'jblackman@debian.localdomain'
       expect(mail.header['X-Received'].to_s).to eq 'misssilly'
     end
+    @processor.process_rts @email
+  end
+
+  it 'does not infinite loop in onwards' do
+    expect(@processor).to receive(:deliver) do |mail|
+      expect(mail.cc).to eq [] # Test to exclude bob@localhost.localdomain when it's the only cc
+    end
+    @email.cc 'bob@localhost.localdomain'
+    @processor.process @email, 'bob@doofus'
+  end
+
+  it 'does not infinite loop in rts' do
+    expect(@processor).to receive(:deliver) do |mail|
+      expect(mail.cc).to eq [] # Test to exclude @email_to when it's the only cc
+    end
+    @email.cc @email_to
     @processor.process_rts @email
   end
 

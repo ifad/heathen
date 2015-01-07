@@ -101,6 +101,7 @@ module AutoHeathen
       email.cc (email.cc - email.to) if email.cc # Prevent autoheathen infinite loop!
       email.to mail_to
       email.subject "#{'Fwd: ' unless email.subject.start_with? 'Fwd:'}#{email.subject}"
+      email.return_path email.from unless email.return_path
       email.parts.delete_if { |p| p.attachment? }
       documents.each do |doc|
         next if doc[:content].nil?
@@ -112,8 +113,6 @@ module AutoHeathen
 
     # Send decoded documents back to sender
     def deliver_rts email, documents, mail_to
-      cc_list = email.cc && email.cc.size > 0 ? email.cc : nil
-      cc_list -= email.to if cc_list # Prevent autoheathen infinite loop!
       logger.info "Sending response mail to #{mail_to}"
       mail = Mail.new
       mail.from @cfg[:from]
