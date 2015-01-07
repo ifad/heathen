@@ -17,6 +17,8 @@ module AutoHeathen
     #    deliver:          true                           If false, email will not be actually sent (useful for testing)
     #    email:            nil                            Email to send response to (if mode == :email)
     #    from:             'autoheathen'                  Who to say the email is from
+    #    cc_blacklist:     nil                            Array of email addresses to excise from CC list of any mails
+    #                                                     - used to avoid infinite loops in autoheathen
     #    mail_host:        'localhost'                    Mail relay host for responses (mode in [:return_to_sender,:email]
     #    mail_port:        25                             Mail relay port (ditto)
     #    text_template:    'config/response.text.haml'    Template for text part of response email (mode in [:return_to_sender,:email])
@@ -27,6 +29,7 @@ module AutoHeathen
           deliver:          true,
           language:         'en',
           from:             'autoheathen',
+          cc_blacklist:     nil,
           email:            nil,
           verbose:          false,
           mail_host:        'localhost',
@@ -98,7 +101,7 @@ module AutoHeathen
     # Forward the email to sender, with decoded documents replacing the originals
     def deliver_onward email, documents, mail_to
       logger.info "Sending response mail to #{mail_to}"
-      email.cc (email.cc - email.to) if email.cc # Prevent autoheathen infinite loop!
+      email.cc (email.cc - email.to - (@cfg[:cc_blacklist]||[]) ) if email.cc # Prevent autoheathen infinite loop!
       email.to mail_to
       email.subject "#{'Fwd: ' unless email.subject.start_with? 'Fwd:'}#{email.subject}"
       email.return_path email.from unless email.return_path
@@ -118,7 +121,7 @@ module AutoHeathen
       mail.from @cfg[:from]
       mail.to mail_to
       # CCs to the original email will get a copy of the converted files as well
-      mail.cc (email.cc - email.to) if email.cc # Prevent autoheathen infinite loop!
+      mail.cc (email.cc - email.to - (@cfg[:cc_blacklist]||[]) ) if email.cc # Prevent autoheathen infinite loop!
       # Don't prepend yet another Re:
       mail.subject "#{'Re: ' unless email.subject.start_with? 'Re:'}#{email.subject}"
       # Construct received path

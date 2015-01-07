@@ -1,5 +1,6 @@
 language: 'en'
 from: 'get.pdf@ifad.org'
+cc_blacklist: [ 'heathen.leg@redgem.ifad.org', 'heathen.rts@redgem.ifad.org' ]
 #email: 'LEG_wikilex@xdesk.ifad.org'
 email: 'a.paglione@ifad.org'
 verbose: false
