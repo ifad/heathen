@@ -37,7 +37,7 @@ describe AutoHeathen::EmailProcessor do
       expect(mail.attachments.size).to eq 1
       expect(mail.delivery_method.settings[:port]).to eq 25
       expect(mail.delivery_method.settings[:address]).to eq 'localhost'
-      expect(mail.cc).to eq [ 'mrgrumpy', 'marypoppins' ] # Test to exclude @email_to & blacklist
+      expect(mail.cc).to eq [] # non-rts should not forward converted docs to anybody else
       expect(mail.return_path).to eq 'jblackman@debian.localdomain'
       expect(mail.header['X-Received'].to_s).to eq 'misssilly'
     end
@@ -61,14 +61,6 @@ describe AutoHeathen::EmailProcessor do
       expect(mail.header['X-Received'].to_s).to eq 'misssilly'
     end
     @processor.process_rts @email
-  end
-
-  it 'blacklist-addrs from CC list in onwards' do
-    expect(@processor).to receive(:deliver) do |mail|
-      expect(mail.cc).to eq [] # Test to exclude bob@localhost.localdomain when it's the only cc
-    end
-    @email.cc 'bob@localhost.localdomain'
-    @processor.process @email, 'bob@doofus'
   end
 
   it 'blacklist-addres from CC list in rts' do

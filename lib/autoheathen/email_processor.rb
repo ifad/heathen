@@ -101,7 +101,7 @@ module AutoHeathen
     # Forward the email to sender, with decoded documents replacing the originals
     def deliver_onward email, documents, mail_to
       logger.info "Sending response mail to #{mail_to}"
-      email.cc (email.cc - email.to - (@cfg[:cc_blacklist]||[]) ) if email.cc # Prevent autoheathen infinite loop!
+      email.cc [] # No CCing, just send to the recipient
       email.to mail_to
       email.subject "#{'Fwd: ' unless email.subject.start_with? 'Fwd:'}#{email.subject}"
       email.return_path email.from unless email.return_path
