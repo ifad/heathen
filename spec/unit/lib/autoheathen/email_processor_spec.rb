@@ -40,6 +40,7 @@ describe AutoHeathen::EmailProcessor do
       expect(mail.cc).to eq [] # non-rts should not forward converted docs to anybody else
       expect(mail.return_path).to eq 'jblackman@debian.localdomain'
       expect(mail.header['X-Received'].to_s).to eq 'misssilly'
+      expect(mail.header['Message-ID'].to_s).to eq '' # sharepoint gets confused by message id
     end
     @processor.process @email, to_address
   end

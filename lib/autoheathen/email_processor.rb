@@ -105,6 +105,8 @@ module AutoHeathen
       email.to mail_to
       email.subject "#{'Fwd: ' unless email.subject.start_with? 'Fwd:'}#{email.subject}"
       email.return_path email.from unless email.return_path
+      # Sharepoint does not like duplicate message ids, so set to nil
+      email.message_id = nil
       email.parts.delete_if { |p| p.attachment? }
       documents.each do |doc|
         next if doc[:content].nil?
