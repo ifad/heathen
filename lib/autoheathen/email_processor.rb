@@ -70,9 +70,9 @@ module AutoHeathen
           input_source = attachment.body.decoded
           action = converter.get_action input_source.content_type
           converted_filename, data = converter.convert action, @cfg[:language], attachment.filename, input_source
-          documents << { orig_filename: attachment.filename, filename: converted_filename, content: data, error: false }
+          documents << { orig_filename: attachment.filename, orig_content: input_source, filename: converted_filename, content: data, error: false }
         rescue StandardError => e
-          documents << { orig_filename: attachment.filename, filename: nil, content: nil, error: e.message }
+          documents << { orig_filename: attachment.filename, orig_content: input_source, filename: nil, content: nil, error: e.message }
         end
       end
 
@@ -121,8 +121,11 @@ module AutoHeathen
       # replace attachments with converted files
       email.parts.delete_if { |p| p.attachment? }
       documents.each do |doc|
-        next if doc[:content].nil?
-        email.add_file filename: doc[:filename], content: doc[:content]
+        if doc[:content]
+          email.add_file filename: doc[:filename], content: doc[:content]
+        else # preserve non-converted attachments when forwarding
+          email.add_file filename: doc[:orig_filename], content: doc[:orig_content]
+        end
       end
       email.delivery_method :smtp, address: @cfg[:mail_host], port: @cfg[:mail_port]
       deliver email

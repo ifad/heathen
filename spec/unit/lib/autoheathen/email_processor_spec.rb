@@ -34,7 +34,8 @@ describe AutoHeathen::EmailProcessor do
       expect(mail.from).to eq @email.from
       expect(mail.to).to eq [to_address]
       expect(mail.subject).to eq "Fwd: Convert: please"
-      expect(mail.attachments.size).to eq 1
+      expect(mail.attachments.size).to eq 2 # includes unconvertable attachment
+      expect(mail.attachments.map(&:filename)).to match_array %w[ test1.doc quickfox.pdf ]
       expect(mail.delivery_method.settings[:port]).to eq 25
       expect(mail.delivery_method.settings[:address]).to eq 'localhost'
       expect(mail.cc).to be_nil # non-rts should not forward converted docs to anybody else
@@ -53,7 +54,7 @@ describe AutoHeathen::EmailProcessor do
       expect(mail.from).to eq ['noreply@ifad.org']
       expect(mail.to).to eq @email.from
       expect(mail.subject).to eq "Re: Fwd: Convert: please"
-      expect(mail.attachments.size).to eq 1
+      expect(mail.attachments.size).to eq 1 # does not include unconvertable attachment
       expect(mail.text_part.decoded.size).to be > 0
       expect(mail.html_part.decoded.size).to be > 0
       expect(mail.delivery_method.settings[:port]).to eq 25
