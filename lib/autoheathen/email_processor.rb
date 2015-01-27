@@ -69,6 +69,7 @@ module AutoHeathen
           converter = AutoHeathen::Converter.new( { logger: logger } )
           input_source = attachment.body.decoded
           action = converter.get_action input_source.content_type
+          logger.info "    convert #{attachment.filename} using action: #{action}"
           converted_filename, data = converter.convert action, @cfg[:language], attachment.filename, input_source
           documents << { orig_filename: attachment.filename, orig_content: input_source, filename: converted_filename, content: data, error: false }
         rescue StandardError => e
