@@ -10,6 +10,8 @@ module AutoHeathen
   class EmailProcessor
     include Config
 
+    ONWARD_HEADERS = ['Date','From','To','Subject','Content-Type','Content-Transfer-Encoding','Mime-Version']
+
     attr_reader :cfg, :logger
 
     # Constructs the processor
@@ -105,8 +107,16 @@ module AutoHeathen
       email.to mail_to
       email.subject "#{'Fwd: ' unless email.subject.start_with? 'Fwd:'}#{email.subject}"
       email.return_path email.from unless email.return_path
-      # Sharepoint does not like duplicate message ids, so set to nil
-      email.message_id = nil
+      # something weird goes on with Sharepoint, where the doc is dropped on the floor
+      # so, remove any offending headers
+      good_headers = ONWARD_HEADERS.map{ |h| h.downcase }
+      email.message_id = nil # for some reason this doesn't always appear in email.header.fields
+      email.header.fields.each do |header|
+        unless good_headers.include? header.name.downcase 
+          email.header[header.name] = nil
+        end
+      end
+      # replace attachments with converted files
       email.parts.delete_if { |p| p.attachment? }
       documents.each do |doc|
         next if doc[:content].nil?

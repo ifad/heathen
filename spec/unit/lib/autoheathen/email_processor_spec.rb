@@ -37,10 +37,13 @@ describe AutoHeathen::EmailProcessor do
       expect(mail.attachments.size).to eq 1
       expect(mail.delivery_method.settings[:port]).to eq 25
       expect(mail.delivery_method.settings[:address]).to eq 'localhost'
-      expect(mail.cc).to eq [] # non-rts should not forward converted docs to anybody else
-      expect(mail.return_path).to eq 'jblackman@debian.localdomain'
-      expect(mail.header['X-Received'].to_s).to eq 'misssilly'
-      expect(mail.header['Message-ID'].to_s).to eq '' # sharepoint gets confused by message id
+      expect(mail.cc).to be_nil # non-rts should not forward converted docs to anybody else
+      #
+      # All headers that sharepoint might not like should be removed
+      #
+      expect(mail.return_path).to be_nil
+      expect(mail.header['X-Received']).to be_nil
+      expect(mail.header['Message-ID'].to_s).to eq ''
     end
     @processor.process @email, to_address
   end
@@ -56,8 +59,6 @@ describe AutoHeathen::EmailProcessor do
       expect(mail.delivery_method.settings[:port]).to eq 25
       expect(mail.delivery_method.settings[:address]).to eq 'localhost'
       expect(mail.cc).to eq [ 'mrgrumpy', 'marypoppins' ] # Test to exclude @email_to & blacklist
-      #expect(mail.received).to be_a Array
-      #expect(mail.received.size).to eq 2
       expect(mail.return_path).to eq 'jblackman@debian.localdomain'
       expect(mail.header['X-Received'].to_s).to eq 'misssilly'
     end
