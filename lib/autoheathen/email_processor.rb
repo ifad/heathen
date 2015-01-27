@@ -109,13 +109,15 @@ module AutoHeathen
       email.return_path email.from unless email.return_path
       # something weird goes on with Sharepoint, where the doc is dropped on the floor
       # so, remove any offending headers
+      email.message_id = nil # make sure of message_id too
       good_headers = ONWARD_HEADERS.map{ |h| h.downcase }
-      email.message_id = nil # for some reason this doesn't always appear in email.header.fields
-      email.header.fields.each do |header|
-        unless good_headers.include? header.name.downcase 
-          email.header[header.name] = nil
+      inspect_headers = email.header.map(&:name)
+      inspect_headers .each do |name|
+        unless good_headers.include? name.downcase 
+          email.header[name] = nil
         end
       end
+      email.received = nil # make sure of received
       # replace attachments with converted files
       email.parts.delete_if { |p| p.attachment? }
       documents.each do |doc|
