@@ -55,6 +55,7 @@ module Heathen
 
             app.set :ooo_port, ENV['OOO_PORT'] || 8100
             app.set :ooo_host, ENV['OOO_HOST'] || 'localhost'
+            app.set :ooo_local, false
 
             app.helpers do
               def converter

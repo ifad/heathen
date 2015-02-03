@@ -48,6 +48,7 @@ module AutoHeathen
     def convert action, language, filename, input_content
       raise "Invalid action: #{action}" unless Heathen::ACTIONS.include? action
       logger.debug "  converting #{filename} (#{input_content.content_type}) using action #{action}"
+      Heathen::App.set :ooo_local, true # don't go remote for OOffice conversions
       converter = Heathen::App.converter
       job = converter.new_job input_content, name: filename
       job.meta.merge!( mime_type: job.mime_type, language: language, name: filename )
