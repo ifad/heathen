@@ -32,6 +32,7 @@ OptionParser.new do |opts|
   opts.on( '-r', '--return-to-sender', 'Converted files will be emailed back to sender' ) { mode = :return_to_sender }
   opts.on( '-t', '--to EMAIL', 'Converted files will be emailed to this address' ) { |e| mode = :email; mail_to = e }
   opts.on( '-s', '--summary', 'Don\'t deposit the converted file, just log a summary' ) { cfg[:deliver] = false }
+  opts.on( '-l', '--language', 'Document language' ) { |l| cfg[:language] = l }
   opts.on( '-M', '--mail-host MAILHOST', 'Mail server for sending replies' ) { |h| cfg[:mail_host] = h }
   opts.on( '-P', '--mail-port PORT', Integer, 'Mail server port' ) { |p| cfg[:mail_port] = p }
   opts.on( '-C', '--config FILE', 'Configuration YAML file' ) { |file| cfg[:config_file] = file }
