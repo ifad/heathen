@@ -106,7 +106,7 @@ module AutoHeathen
       logger.info "Sending response mail to #{mail_to}"
       email.cc [] # No CCing, just send to the recipient
       email.to mail_to
-      email.subject "#{'Fwd: ' unless email.subject.start_with? 'Fwd:'}#{email.subject}"
+      email.subject "#{'Fwd: ' unless email.subject.to_s.start_with? 'Fwd:'}#{email.subject}"
       email.return_path email.from unless email.return_path
       # something weird goes on with Sharepoint, where the doc is dropped on the floor
       # so, remove any offending headers
