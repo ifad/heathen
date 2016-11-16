@@ -5,25 +5,13 @@
 # Base settings
 set :application, 'heathen'
 
-# Stages settings
-set :stages,       %w( staging production )
-set(:rack_env)     { stage }
+require 'infrad'
 
-require 'capistrano/ext/multistage'
+Infrad.deploy(self, app: application)
 
-# Repository settings
-set :repository,    "git@github.com:ifad/heathen.git"
-set :scm,           "git"
-set :branch,        fetch(:branch, "master")
-set :deploy_via,    :remote_cache
-set :deploy_to,     "/home/rails/apps/#{application}"
-set :use_sudo,      false
+set(:rack_env) { stage }
 
-# Account settings
-set :user,          fetch(:user, 'heathen')
-
-ssh_options[:forward_agent] = true
-ssh_options[:auth_methods]  = %w( publickey )
+set :branch,   fetch(:branch, "master")
 
 # =========================================================================
 # Dependencies

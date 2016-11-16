@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+ruby '2.1.10'
+
 gem 'sinatra',            '~> 1.3.3'
 gem 'redis',              '~> 3.0.2'
 gem 'redis-namespace',    '~> 1.2.1'
@@ -18,7 +20,8 @@ group :staging, :production do
 end
 
 group :development do
-  gem 'capistrano',         '~> 2.13.5'
+  gem 'infrad',  git: 'git@code.ifad.org:infrad.git'
+  gem 'capistrano',         '~> 2.15.5'
   gem 'capistrano-ext',     '~> 1.2.1'
   gem 'airbrake',           '~> 3.1.6'
   gem 'pry'
@@ -32,11 +35,11 @@ platform :ruby do
   gem 'rmagick'
   gem 'unicorn'
   gem 'iconv'
-  gem 'pdfbeads', github: 'ifad/pdfbeads'
+  gem 'pdfbeads', git: 'git@github.com:ifad/pdfbeads', ref: '7f81be26eced36b12fa2cd6795c57ab4c9230eae'
 end
 
 #platform :jruby do
-#  gem 'ruby-debug-base', github: 'ifad/jruby-debug'
+#  gem 'ruby-debug-base', git: 'git@github.com:ifad/jruby-debug'
 #  gem 'ruby-debug'
 #  gem 'rmagick4j'
 #  gem 'json'
